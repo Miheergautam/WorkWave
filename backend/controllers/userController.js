@@ -5,7 +5,6 @@ const {
   passwordValidatorSchema,
 } = require("../middleware/schemaValidator");
 const jwt = require("jsonwebtoken");
-const authenicateUser = require("../middleware/authMiddleware");
 
 // User Signup
 const userSignup = async (req, res) => {
@@ -60,10 +59,12 @@ const userSignin = async (req, res) => {
   try {
     // Check if the user exists
     const user = await userModel.findOne({ email: data.email });
-    if (user) {
-      const passwordMatch = await bcrypt.compare(data.password, user.password);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
+    // Check if the password is correct
+    const passwordMatch = await bcrypt.compare(data.password, user.password);
     if (passwordMatch) {
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: "1h",
@@ -84,6 +85,7 @@ const userSignin = async (req, res) => {
 //USER UPDATE
 const userUpdate = async (req, res) => {
   const id = req.userId;
+  console.log(id);
   if (!id)
     return res
       .status(400)
@@ -101,7 +103,7 @@ const userUpdate = async (req, res) => {
     }
 
     // Check if 'password' field is present
-    if (password !== undefined) {
+    if (data.password !== undefined) {
       return res
         .status(400)
         .json({ message: "Password cannot be updated through this endpoint" });
@@ -153,19 +155,21 @@ const changePassword = async (req, res) => {
     );
 
     if (passwordMatch) {
-      const hashedPassword = await bcrypt.hash(data.newPassword, 10);
-      const updatedUser = await userModel.findByIdAndUpdate(
-        id,
-        { $set: { password: hashedPassword } },
-        { new: true, runValidators: true }
-      );
+      if (data.confirmPassword === data.newPassword) {
+        const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+        const updatedUser = await userModel.findByIdAndUpdate(
+          id,
+          { $set: { password: hashedPassword } },
+          { new: true, runValidators: true }
+        );
 
-      if (updatedUser) {
-        return res
-          .status(200)
-          .json({ message: "Password updated successfully" });
-      } else {
-        return res.status(404).json({ message: "User not found" });
+        if (updatedUser) {
+          return res
+            .status(200)
+            .json({ message: "Password updated successfully" });
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
       }
     }
   } catch (err) {
@@ -177,7 +181,17 @@ const changePassword = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await userModel.find();
-    res.status(200).json({ users });
+    res.status(200).json({
+      users: users.map((user) => {
+        return {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          dateOfBirth: user.date,
+        };
+      }),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -185,7 +199,7 @@ const getUsers = async (req, res) => {
 
 //get user by id
 const getUserById = async (req, res) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) return res.status(400).json({ message: "User ID is required" });
 
   try {
@@ -202,7 +216,7 @@ const getUserById = async (req, res) => {
 
 //delete user
 const deleteUser = async (req, res) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) return res.status(400).json({ message: "User ID is required" });
 
   try {

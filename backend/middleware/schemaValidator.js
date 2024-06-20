@@ -25,8 +25,9 @@ const userValidationSchema = zod.object({
 });
 
 const passwordValidatorSchema = zod.object({
-  currentPasword: zod.string().min(6).max(50),
+  currentPassword: zod.string().min(6).max(50),
   newPassword: zod.string().min(6).max(50),
+  confirmPassword: zod.string().min(6).max(50),
 });
 
 module.exports = {
