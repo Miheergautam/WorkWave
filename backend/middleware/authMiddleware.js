@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-const authenicateUser = (req, res, next) => {
+const authenicatePerson = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -19,4 +19,4 @@ const authenicateUser = (req, res, next) => {
   }
 };
 
-module.exports = authenicateUser;
+module.exports = authenicatePerson;
