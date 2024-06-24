@@ -96,9 +96,43 @@ const employeeValidationSchema = zod.object({
   dateModified: zod.date().optional(),
 });
 
+//Candidate Validation Schema
+const candidateValidationSchema = zod.object({
+  candidateId: zod.string().uuid().optional(),
+  firstName: zod.string().trim().optional(),
+  lastName: zod.string().trim().optional(),
+  email: zod.string().trim().email().optional(),
+  mobile: zod.string().trim().optional(),
+  alternativeMobile: zod.string().trim().optional(),
+  skypeId: zod.string().trim().optional(),
+  linkedIn: zod.string().trim().url().optional(),
+  skills: zod.array(zod.string()).optional(),
+  resume:zod.string().optional(),
+  experience: zod.number().min(0).optional(),
+  currentCTC: zod.number().min(0).optional(),
+  expectedCTC: zod.number().min(0).optional(),
+  expectedJoiningDate: zod.date().optional(),
+  machineRound: zod.enum(["pending", "cleared", "failed"]).optional(),
+  technicalInterviewRound: zod
+    .enum(["pending", "cleared", "failed"])
+    .optional(),
+  hrInterviewRound: zod.enum(["pending", "cleared", "failed"]).optional(),
+  selectionStatus: zod.enum(["selected", "rejected", "on hold"]).optional(),
+  address: zod.string().trim().optional(),
+  idProof: zod.string().trim().optional(),
+  education: zod
+    .object({
+      tenthPercentage: zod.number().min(0).max(100).optional(),
+      twelfthPercentage: zod.number().min(0).max(100).optional(),
+      graduationPercentage: zod.number().min(0).max(100).optional(),
+    })
+    .optional(),
+});
+
 module.exports = {
   adminValidationSchema,
   userValidationSchema,
   passwordValidationSchema,
   employeeValidationSchema,
+  candidateValidationSchema,
 };
