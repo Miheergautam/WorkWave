@@ -156,6 +156,23 @@ const helpCenterValidationSchema = zod.object({
   solvedBy: zod.string().optional(),
 });
 
+const consultancyValidationSchema = zod.object({
+  name: zod.string().optional(),
+  email: zod.string().email().optional(),
+  website: zod.string().url().optional(),
+  contactNumbers: zod.array(zod.string()).optional(),
+  city: zod.string().optional(),
+  state: zod.string().optional(),
+  address: zod.string().optional(),
+  contractAgreement: zod.string().optional(),
+  contactPersonName: zod.string().optional(),
+  contactLinkedInProfile: zod.string().url().optional(),
+  servicesProvided: zod.array(zod.string()).optional(),
+  contractStartDate: zod.date().nullable().optional(),
+  contractEndDate: zod.date().nullable().optional(),
+  notes: zod.string().optional()
+});
+
 module.exports = {
   adminValidationSchema,
   userValidationSchema,
@@ -164,4 +181,5 @@ module.exports = {
   candidateValidationSchema,
   expenseValidationSchema,
   helpCenterValidationSchema,
+  consultancyValidationSchema,
 };
