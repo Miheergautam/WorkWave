@@ -129,10 +129,23 @@ const candidateValidationSchema = zod.object({
     .optional(),
 });
 
+const expenseValidationSchema = zod.object({
+  purpose: zod.string().optional(),
+  billUrl: zod.string().url().optional(),
+  amount: zod.number().min(0).optional(),
+  voucherUrl: zod.string().url().optional(),
+  remark: zod.string().optional(),
+  paymentMethod: zod.enum(['cash', 'cheque', 'credit card', 'bank transfer']).optional(),
+  cashReceivedBy: zod.string().optional(),
+  createdAt: zod.date().optional(),
+  updatedAt: zod.date().optional(),
+});
+
 module.exports = {
   adminValidationSchema,
   userValidationSchema,
   passwordValidationSchema,
   employeeValidationSchema,
   candidateValidationSchema,
+  expenseValidationSchema,
 };
