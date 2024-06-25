@@ -107,7 +107,7 @@ const candidateValidationSchema = zod.object({
   skypeId: zod.string().trim().optional(),
   linkedIn: zod.string().trim().url().optional(),
   skills: zod.array(zod.string()).optional(),
-  resume:zod.string().optional(),
+  resume: zod.string().optional(),
   experience: zod.number().min(0).optional(),
   currentCTC: zod.number().min(0).optional(),
   expectedCTC: zod.number().min(0).optional(),
@@ -135,10 +135,25 @@ const expenseValidationSchema = zod.object({
   amount: zod.number().min(0).optional(),
   voucherUrl: zod.string().url().optional(),
   remark: zod.string().optional(),
-  paymentMethod: zod.enum(['cash', 'cheque', 'credit card', 'bank transfer']).optional(),
+  paymentMethod: zod
+    .enum(["cash", "cheque", "credit card", "bank transfer"])
+    .optional(),
   cashReceivedBy: zod.string().optional(),
   createdAt: zod.date().optional(),
   updatedAt: zod.date().optional(),
+});
+
+const helpCenterValidationSchema = zod.object({
+  ticketId: zod.string().optional(),
+  employeeId: zod.string().optional(),
+  description: zod.string().optional(),
+  priority: zod.enum(["Low", "Medium", "High"]).optional(),
+  department: zod.string().optional(),
+  dateOfCreation: zod.date().optional(),
+  status: zod.enum(["Open", "In Progress", "Closed"]).optional(),
+  dateOfCompletion: zod.date().optional(),
+  assignedTo: zod.string().optional(),
+  solvedBy: zod.string().optional(),
 });
 
 module.exports = {
@@ -148,4 +163,5 @@ module.exports = {
   employeeValidationSchema,
   candidateValidationSchema,
   expenseValidationSchema,
+  helpCenterValidationSchema,
 };
