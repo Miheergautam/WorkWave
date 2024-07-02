@@ -6,6 +6,7 @@ const parseISODate = (isoDateString) => {
   return new Date(dateParts);
 };
 
+
 // Create a new ticket
 const createHelpTicket = async (req, res) => {
   try {
