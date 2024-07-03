@@ -16,7 +16,7 @@ export const people = [
 export function ProfileInfo() {
   return (
     <>
-      <div className="col-span-3 border border-neutral-700 bg-neutral-900 rounded-lg p-4">
+      <div className="col-span-4 border border-neutral-700 bg-neutral-900 rounded-lg p-4">
         <p className="py-2 px-8 text-xl">Personal Information</p>
         <div className="p-10 flex items-center justify-center gap-10">
           <img

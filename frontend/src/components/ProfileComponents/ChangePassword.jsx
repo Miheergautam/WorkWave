@@ -1,8 +1,6 @@
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { PasswordInputBox } from "../components/InfoComponents/PasswordInputBox";
+import { PasswordInputBox } from "../InfoComponents/PasswordInputBox";
 import { useState } from "react";
-import { Button } from "../components/InfoComponents/Button";
 
 export function ChangePassword() {
   const navigate = useNavigate();
@@ -17,7 +15,7 @@ export function ChangePassword() {
   };
 
   return (
-    <div className="col-span-4 bg-neutral-900">
+    <div className="col-span-4 bg-neutral-900 border border-neutral-700 rounded-lg">
       <div className="grid grid-cols-3">
         <div className="col-span-1 col-start-2">
           <PasswordInputBox

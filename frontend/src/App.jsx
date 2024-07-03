@@ -7,7 +7,7 @@ import { Home } from "./pages/Home";
 import { Employee } from "./components/DashboardComponents/Employee";
 import { Dashboard } from "./components/DashboardComponents/Dashboard";
 import { Profile } from "./pages/Profile";
-import { ChangePassword } from "./pages/ChangePassword";
+import { ChangePassword } from "./components/ProfileComponents/ChangePassword";
 import { ProfileEdit } from "./components/ProfileComponents/ProfileEdit";
 import { CandidateLayout } from "./pages/CandidateLayout";
 import { NewCandidtate } from "./components/CandidatesComponent/NewCandidate";
