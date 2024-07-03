@@ -13,20 +13,13 @@ export function ChangePassword() {
 
   const handleSubmitButton = () => {
     // Add your code here
-    navigate("/layout/profile");
+    navigate("/home/profile/info");
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <ArrowLeft
-          className="w-6 h-6 cursor-pointer"
-          onClick={() => navigate("/layout/profile")}
-        />
-        <strong className="text-xl font-semibold">ChangePassword</strong>
-      </div>
-      <div className="bg-neutral-900 border border-neutral-700 rounded-lg  p-4 grid grid-cols-4 place-items-center">
-        <div className="col-span-2 col-start-2 w-80 ">
+    <div className="col-span-4 bg-neutral-900">
+      <div className="grid grid-cols-3">
+        <div className="col-span-1 col-start-2">
           <PasswordInputBox
             label="Current Password"
             placeholder="Enter current Password"
@@ -48,8 +41,13 @@ export function ChangePassword() {
               setConfirmPassword(e.target.value);
             }}
           />
-          <div className="my-8 mx-10">
-            <Button label="Submit" onClick={handleSubmitButton} />
+          <div className="flex justify-center items-center my-8">
+            <button
+              className="bg-indigo-500 py-2 px-8 rounded-xl"
+              onClick={handleSubmitButton}
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>

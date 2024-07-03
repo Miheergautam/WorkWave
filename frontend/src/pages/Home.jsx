@@ -1,22 +1,32 @@
-import { Navbar } from "../components/HomeComponents/Navbar";
-import { HeroSection } from "../components/HomeComponents/HeroSection";
-import { FeatureSection } from "../components/HomeComponents/FeatureSection";
-import { WorkflowSection } from "../components/HomeComponents/WorkflowSection";
-import { PricingSection } from "../components/HomeComponents/PricingSection";
-import { Testimonials } from "../components/HomeComponents/Testimonials";
-import { Footer } from "../components/HomeComponents/Footer";
+import { Navbar } from "../components/DashboardComponents/Navbar";
+import { Sidebar } from "../components/DashboardComponents/Sidebar";
+import { Outlet } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export function Home() {
+  const location = useLocation();
+
   return (
-    <div>
-      <Navbar />
-      <div className="max-w-7xl mx-auto pt-20 px-6">
-        <HeroSection />     
-        <FeatureSection />
-        <WorkflowSection />
-        <PricingSection />
-        <Testimonials />
-        <Footer />
+    <div className="flex flex-row h-screen w-screen overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        <div className="p-4 flex-grow overflow-auto">
+          <Outlet />
+
+          {location.pathname === "/home" ? (
+            <div>
+              <h1 className="text-center my-10 text-4xl ">
+                Welcome to
+                <br />
+                <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text font-bold text-6xl">
+                  {" "}
+                  WorkWAVE
+                </span>
+              </h1>
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

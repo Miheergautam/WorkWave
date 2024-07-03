@@ -119,7 +119,7 @@ export function Navbar() {
                         active ? "bg-neutral-600" : ""
                       }`}
                       onClick={() => {
-                        navigate("profile");
+                        navigate("profile/info");
                       }}
                     >
                       Your Profile
