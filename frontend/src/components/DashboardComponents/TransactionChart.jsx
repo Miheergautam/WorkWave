@@ -27,7 +27,7 @@ const data = [
 export function TransactionChart() {
   return (
     <div className="h-[22rem] bg-neutral-900 p-4 rounded-sm border border-neutral-700 flex flex-col flex-1">
-      <strong className="text-neutral-200 font-medium">Transaction</strong>
+      <strong className="text-neutral-200 font-medium">Finance</strong>
       <div className="w-full mt-3 flex-1 text-xs">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -36,7 +36,11 @@ export function TransactionChart() {
             data={data}
             margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} horizontal={false} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              horizontal={false}
+            />
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />

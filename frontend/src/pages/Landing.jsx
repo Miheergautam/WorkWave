@@ -1,10 +1,10 @@
-import { Navbar } from "../components/HomeComponents/Navbar";
-import { HeroSection } from "../components/HomeComponents/HeroSection";
-import { FeatureSection } from "../components/HomeComponents/FeatureSection";
-import { WorkflowSection } from "../components/HomeComponents/WorkflowSection";
-import { PricingSection } from "../components/HomeComponents/PricingSection";
-import { Testimonials } from "../components/HomeComponents/Testimonials";
-import { Footer } from "../components/HomeComponents/Footer";
+import { Navbar } from "../components/LandingComponents/Navbar";
+import { HeroSection } from "../components/LandingComponents/HeroSection";
+import { FeatureSection } from "../components/LandingComponents/FeatureSection";
+import { WorkflowSection } from "../components/LandingComponents/WorkflowSection";
+import { PricingSection } from "../components/LandingComponents/PricingSection";
+import { Testimonials } from "../components/LandingComponents/Testimonials";
+import { Footer } from "../components/LandingComponents/Footer";
 
 export function Landing() {
   return (

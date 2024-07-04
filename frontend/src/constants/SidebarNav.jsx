@@ -1,4 +1,4 @@
-import { Home, User, ClipboardList, Inbox, Briefcase, Users, DollarSign, Settings, LifeBuoy } from "lucide-react";
+import { Home, User, ClipboardList, Inbox, Briefcase, Users, DollarSign, Settings, LifeBuoy,  Calendar, Clock } from "lucide-react";
 
 
 export const UpperDashboardSidebarLinks = [
@@ -35,7 +35,7 @@ export const UpperDashboardSidebarLinks = [
   {
     key: "employees",
     label: "Employees",
-    path: "employees",
+    path: "employee",
     icon: <User className="h-5 w-5" />,
   },
   {
@@ -44,15 +44,15 @@ export const UpperDashboardSidebarLinks = [
     path: "finance",
     icon: <DollarSign className="h-5 w-5" />,
   },
+  {
+    key: "attendance",
+    label: "Attendance",
+    path: "attendance",
+    icon: <Calendar className="h-5 w-5" />,
+  }
 ];
 
 export const BottomDashboardSidebarLinks = [
-  {
-    key: "settings",
-    label: "Settings",
-    path: "/settings",
-    icon: <Settings className="h-5 w-5" />,
-  },
   {
     key: "support",
     label: "Support",

@@ -44,7 +44,7 @@ const renderCustomizedLabel = ({
 export function BuyerProfileChart() {
   return (
     <div className="w-[20rem] h-[22rem] bg-neutral-900 p-4 rounded-sm border border-neutral-700 flex flex-col">
-      <strong className="text-neutral-200 font-medium">Buyers Profile</strong>
+      <strong className="text-neutral-200 font-medium">Department Distribution</strong>
       <div className="w-full mt-3 flex-1 text-xs">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart width={400} height={300}>

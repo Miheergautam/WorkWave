@@ -14,7 +14,6 @@ export function Dashboard(){
             </div>
             <div className="flex gap-4 w-full">
             <RecentOrders />
-            <PopularProducts />
 
             </div>
 
