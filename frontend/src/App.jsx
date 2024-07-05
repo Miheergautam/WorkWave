@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
@@ -11,6 +13,7 @@ import { EmployeeLayout } from "./pages/EmployeeLayout";
 import { NewEmployee } from "./components/EmployeeComponents/NewEmployee";
 import { EditEmployee } from "./components/EmployeeComponents/EditEmployee";
 import { ManageEmployees } from "./components/EmployeeComponents/ManageEmployees";
+import {EmployeeInfo} from "./components/EmployeeComponents/EmployeeInfo";
 
 import { Dashboard } from "./components/DashboardComponents/Dashboard";
 import { CandidateLayout } from "./pages/CandidateLayout";
@@ -29,9 +32,15 @@ import { AddExpense } from "./components/FinanceComponents/ExpenseComponents/Add
 import { ManageExpense } from "./components/FinanceComponents/ExpenseComponents/ManageExpense";
 import { EditExpense } from "./components/FinanceComponents/ExpenseComponents/EditExpense";
 
+import { AttendanceLayout } from "./pages/AttendanceLayout";
+import { CreateAttendance } from "./components/AttendanceComponents/CreateAttendance";
+import { EditAttendance } from "./components/AttendanceComponents/EditAttendance";
+import { ViewAttendance } from "./components/AttendanceComponents/ViewAttendance";
+
 function App() {
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signin" element={<SignIn />} />
@@ -49,6 +58,7 @@ function App() {
             <Route path="manage" element={<ManageCandidate />} />
           </Route>
           <Route path="employee" element={<EmployeeLayout />}>
+            <Route path="info" element={<EmployeeInfo />} />
             <Route path="create" element={<NewEmployee />} />
             <Route path="edit" element={<EditEmployee />} />
             <Route path="manage" element={<ManageEmployees />} />
@@ -59,7 +69,11 @@ function App() {
             <Route path="expense/add" element={<AddExpense />} />
             <Route path="expense/manage" element={<ManageExpense />} />
           </Route>
-          <Route path="settings" element={<Dashboard />} />
+          <Route path="attendance" element={<AttendanceLayout />}>
+            <Route path="create" element={<CreateAttendance />} />
+            <Route path="edit" element={<EditAttendance />} />
+            <Route path="view" element={<ViewAttendance />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

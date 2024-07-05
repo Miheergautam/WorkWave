@@ -1,7 +1,10 @@
 import Img from "../../assets/images/logo.png";
 import { useState } from "react";
-
+import { ArrowLabel } from "../others/ArrowLabel";
 import { InputBox } from "../InfoComponents/InputBox";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 export function ProfileEdit() {
   const [user, setUser] = useState({
@@ -16,12 +19,28 @@ export function ProfileEdit() {
     email: "John.io@example.com",
   });
 
+  const navigate = useNavigate();
+
   const handleUploadImage = () => {
-    // Create a new input element
+    // Placeholder for image upload logic
+    toast.info("Image upload feature coming soon!");
+  };
+
+  const handleSaveChanges = () => {
+    // Placeholder for save changes logic
+    toast.success("Profile updated successfully!", {
+      position: "bottom-right",
+      autoClose: 2000,
+    });
+
+    setTimeout(() => {
+      navigate("/home/profile/info");
+    }, 2500);
   };
 
   return (
     <>
+      <ArrowLabel label="Edit Profile" location={"/home/profile/info"} />
       <div className="col-span-4 border border-neutral-700 bg-neutral-900 rounded-lg p-4">
         <span className="py-2 px-8 text-xl">Personal Information</span>
         <div className="p-10 flex items-center justify-center gap-10">
@@ -107,6 +126,15 @@ export function ProfileEdit() {
       </div>
       <div className="bg-neutral-900 col-span-4 border border-neutral-700 rounded-lg">
         <p className="py-2 px-8 text-xl">Other Information</p>
+
+        <div className="flex justify-center my-4">
+          <button
+            className="py-2 px-6 bg-purple-500 rounded-lg "
+            onClick={handleSaveChanges}
+          >
+            Save
+          </button>
+        </div>
       </div>
     </>
   );

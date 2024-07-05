@@ -2,22 +2,22 @@ import { Outlet } from "react-router-dom";
 import { ArrowLabel } from "../components/others/ArrowLabel";
 import { ButtonPanel } from "../components/others/ButtonPanel";
 import { useLocation } from "react-router-dom";
-
-export function EmployeeLayout() {
+export function AttendanceLayout() {
   const location = useLocation();
 
   return (
     <div className="flex flex-col">
-      {location.pathname === "/home/employee" && (
+      {location.pathname === "/home/attendance" && (
         <>
-          <ArrowLabel label="Employee" location={"/home"} />
+          <ArrowLabel label="Attendance" location={"/home"} />
           <ButtonPanel
             number={3}
-            labels={["Create Employee", "Manage Employee" , "Employee Info"]}
-            locations={["create", "manage" , "info"]}
+            labels={["Create", "Edit", "view"]}
+            locations={["create", "edit", "view"]}
           />
         </>
       )}
+
       <Outlet />
     </div>
   );

@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { ArrowLabel } from "../../others/ArrowLabel";
 import { InputBox } from "../../InfoComponents/InputBox";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { set } from "mongoose";
 
 export function EditExpense() {
   const [employeeId, setEmployeeId] = useState("E789");
@@ -14,12 +17,27 @@ export function EditExpense() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    // Handle form submission logic here
-    navigate("../expense/manage");
+    // Placeholder for actual form submission logic
+    console.log("Updated Expense:", {
+      employeeId,
+      expenseAmount,
+      purpose,
+      dateOfExpense,
+      approvedBy,
+      status,
+    });
+
+    // Show toast notification
+    toast.success("Expense Updated Successfully!", {
+      position: "bottom-right",
+      autoClose: 1500,
+    });
+    setTimeout(() => navigate("../expense"), 2000);
   };
 
   return (
     <div className="flex flex-col">
+      <ToastContainer /> {/* Ensure ToastContainer is rendered */}
       <ArrowLabel label="Edit Expense" location="../expense" />
       <div className="grid grid-cols-3 bg-neutral-900 border border-neutral-600 rounded-lg p-8 m-4">
         <div className="col-span-3 flex justify-around">
@@ -40,6 +58,7 @@ export function EditExpense() {
           />
           <InputBox
             label="Date Of Expense"
+            type="date"
             value={dateOfExpense}
             onChange={(e) => setDateOfExpense(e.target.value)}
           />
@@ -64,7 +83,7 @@ export function EditExpense() {
           </div>
           <div className="mt-3">
             <button
-              className="px-4 py-2 mt-3 bg-indigo-500 rounded-lg font-medium"
+              className="px-4 py-2 mt-3 bg-indigo-500 rounded-lg font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               onClick={handleSubmit}
             >
               Update

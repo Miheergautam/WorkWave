@@ -15,7 +15,9 @@
     "lucide-react": "^0.397.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-modal": "^3.16.1",
     "react-router-dom": "^6.23.1",
+    "react-toastify": "^10.0.5",
     "recharts": "^2.12.7"
   },
   "devDependencies": {
