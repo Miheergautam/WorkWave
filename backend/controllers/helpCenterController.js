@@ -1,17 +1,12 @@
 const helpCenterModel = require("../models/helpCenterModel");
 const { helpCenterValidationSchema } = require("../middleware/schemaValidator");
 
-const parseISODate = (isoDateString) => {
-  const dateParts = isoDateString.split("T")[0]; // Split at 'T' and take the date part
-  return new Date(dateParts);
-};
-
-
 // Create a new ticket
 const createHelpTicket = async (req, res) => {
   try {
-    req.body.dateOfCreation = parseISODate(req.body.dateOfCreation);
-    req.body.dateOfCompletion = parseISODate(req.body.dateOfCompletion);
+    if (req.body.dateOfCreation) {
+      req.body.dateOfCreation = new Date(req.body.dateOfCreation);
+    }
     const { success, data, error } = helpCenterValidationSchema.safeParse(
       req.body
     );
@@ -19,10 +14,13 @@ const createHelpTicket = async (req, res) => {
       return res.status(400).send(error);
     }
 
-    const ticket = new helpCenterModel(data);
-    await ticket.save();
+    const newTicket = new helpCenterModel(data);
+    await newTicket.save();
 
-    res.status(201).send(ticket);
+    res.status(201).send({
+      message: "Ticket created successfully",
+      data: newTicket,
+    });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -33,31 +31,21 @@ const getAllTickets = async (req, res) => {
   try {
     const tickets = await helpCenterModel.find();
 
-    const ticketData = tickets.map((ticket) => {
-      return {
-        ticketId: ticket.ticketId,
-        employeeId: ticket.employeeId,
-        description: ticket.description,
-        department: ticket.department,
-        dateOfCreation: ticket.dateOfCreation,
-        status: ticket.status,
-        assignedTo: ticket.assignedTo,
-      };
+    res.status(200).send({
+      message: "All tickets fetched successfully",
+      NoOfTickets: tickets.length,
+      data: tickets,
     });
-
-    res.send(ticketData);
   } catch (error) {
-    res.status(500).send;
+    res.status(500).send(error);
   }
 };
 
-
 // Get ticket by id
 const getTicketById = async (req, res) => {
-
   try {
-    const {id} = req.params;
-    if(!id){
+    const id = req.params.id;
+    if (!id) {
       return res.status(400).send("Ticket id is required");
     }
 
@@ -67,7 +55,10 @@ const getTicketById = async (req, res) => {
       return res.status(404).send("Ticket not found");
     }
 
-    res.send(ticket);
+    res.status(200).send({
+      message: "Ticket fetched successfully",
+      data: ticket,
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -76,7 +67,17 @@ const getTicketById = async (req, res) => {
 // Update ticket by id
 const updateTicket = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
+    if (!id) return res.status(400).send("Ticket id is required");
+
+    // Convert date strings to Date objects if present
+    if (req.body.dateOfCreation) {
+      req.body.dateOfCreation = new Date(req.body.dateOfCreation);
+    }
+    if (req.body.resolvedDate) {
+      req.body.resolvedDate = new Date(req.body.resolvedDate);
+    }
+
     const { success, data, error } = helpCenterValidationSchema.safeParse(
       req.body
     );
@@ -84,24 +85,28 @@ const updateTicket = async (req, res) => {
       return res.status(400).send(error);
     }
 
-    const ticket = await helpCenterModel.findByIdAndUpdate(id, data, {
-      new: true,
-    });
+    const updatedTicket = await helpCenterModel.findByIdAndUpdate(
+      id, // Filter by ticketId
+      data, // Update with parsed data
+      { new: true } // Return updated document
+    );
 
-    if (!ticket) {
+    if (!updatedTicket) {
       return res.status(404).send("Ticket not found");
     }
 
-    res.send(ticket);
+    res.status(200).json({
+      message: "Ticket updated successfully",
+    });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json(error);
   }
 };
 
 // Delete ticket by id
 const deleteTicket = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
 
     const ticket = await helpCenterModel.findByIdAndDelete(id);
 
@@ -109,7 +114,9 @@ const deleteTicket = async (req, res) => {
       return res.status(404).send("Ticket not found");
     }
 
-    res.send(ticket);
+    res.status(200).json({
+      message: "Ticket deleted successfully",
+    });
   } catch (error) {
     res.status(500).send(error);
   }

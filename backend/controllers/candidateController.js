@@ -2,18 +2,16 @@ const candidateModel = require("../models/candidateModel");
 const { candidateValidationSchema } = require("../middleware/schemaValidator");
 const fs = require("fs");
 const path = require("path");
-const { Console } = require("console");
 
 // Create a new candidate
 const createCandidate = async (req, res) => {
-  const { success, data, error } = candidateValidationSchema.safeParse(
-    req.body
-  );
-  if (!success) {
-    return res.status(400).json({ error: error.errors });
-  }
-
   try {
+    const { success, data, error } = candidateValidationSchema.safeParse(
+      req.body
+    );
+    if (!success) {
+      return res.status(400).json({ error: error.errors });
+    }
     const existingCandidate = await candidateModel.findOne({
       email: data.email,
     });
@@ -21,7 +19,7 @@ const createCandidate = async (req, res) => {
       return res.status(400).json({ error: "Candidate already exists" });
     }
 
-    const uploadDir = process.cwd() + "/public/";
+    /* const uploadDir = process.cwd() + "/public/";
     const resumeUploadDir = uploadDir + "candidates/resumes/";
 
     if (!fs.existsSync(resumeUploadDir)) {
@@ -69,18 +67,16 @@ const createCandidate = async (req, res) => {
     // Construct URLs
     const resumeFullPdfUrl = resumePromise.finalname
       ? `/candidates/resumes/${resumePromise.finalname}`
-      : "";
+      : ""; */
 
-    const candidate = new candidateModel({
+    const newCandidate = new candidateModel({
       ...data,
-      resume: resumeFullPdfUrl,
+      /* resume: resumeFullPdfUrl, */
     });
 
-    await candidate.save();
+    await newCandidate.save();
 
-    return res
-      .status(201)
-      .json({ success: true, message: "Candidate created successfully" });
+    return res.status(201).json({ message: "Candidate created successfully" });
   } catch {
     return res
       .status(500)
@@ -93,19 +89,11 @@ const createCandidate = async (req, res) => {
 const getAllCandidates = async (req, res) => {
   try {
     const candidates = await candidateModel.find();
-    const candidateData = candidates.map((candidate) => {
-      return {
-        candidateId: candidate.candidateId,
-        firstName: candidate.firstName,
-        lastName: candidate.lastName,
-        email: candidate.email,
-        mobile: candidate.mobile,
-        status: candidate.status,
-        linkedIn: candidate.linkedIn,
-      };
-    });
 
-    return res.status(200).json({ success: true, data: candidateData });
+    return res.status(200).json({
+      message: "Candidates fetched successfully",
+      data: candidates,
+    });
   } catch {
     return res
       .status(500)
@@ -114,28 +102,21 @@ const getAllCandidates = async (req, res) => {
 };
 
 const getCandidate = async (req, res) => {
-  const id = req.params.id;
-  if (!id) {
-    return res.status(400).json({ error: "Candidate ID is required" });
-  }
-
   try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ error: "Candidate ID is required" });
+    }
+
     const candidate = await candidateModel.findById(id);
     if (!candidate) {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    const candidateData = {
-      candidateId: candidate.candidateId,
-      firstName: candidate.firstName,
-      lastName: candidate.lastName,
-      email: candidate.email,
-      mobile: candidate.mobile,
-      status: candidate.status,
-      linkedIn: candidate.linkedIn,
-    };
-
-    return res.status(200).json({ success: true, data: candidateData });
+    return res.status(200).json({
+      message: "Candidate fetched successfully",
+      data: candidate,
+    });
   } catch (error) {
     console.error("Error fetching candidate:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -145,25 +126,24 @@ const getCandidate = async (req, res) => {
 // Update a candidate
 
 const updateCandidate = async (req, res) => {
-  const id = req.params.id;
-  if (!id) {
-    return res.status(400).json({ error: "Candidate ID is required" });
-  }
-  const { success, data, error } = candidateValidationSchema.safeParse(
-    req.body
-  );
-
-  if (!success) {
-    return res.status(400).json({ error: error.errors });
-  }
-
   try {
-    const candidate = await candidateModel.findOne({ _id: id });
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ error: "Candidate ID is required" });
+    }
+    const { success, data, error } = candidateValidationSchema.safeParse(
+      req.body
+    );
+
+    if (!success) {
+      return res.status(400).json({ error: error.errors });
+    }
+    const candidate = await candidateModel.findById(id);
     if (!candidate) {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    const uploadDir = process.cwd() + "/public/";
+    /* const uploadDir = process.cwd() + "/public/";
     const resumeUploadDir = uploadDir + "candidates/resumes/";
 
     [resumeUploadDir].forEach((dir) => {
@@ -211,12 +191,12 @@ const updateCandidate = async (req, res) => {
     const resumeFullPdfUrl = resumePromise.finalname
       ? `/candidates/resumes/${resumePromise.finalname}`
       : "";
-
+ */
     const updatedCandidate = await candidateModel.findOneAndUpdate(
       { _id: id },
       {
         ...data,
-        resume: resumeFullPdfUrl,
+        /* resume: resumeFullPdfUrl, */
       },
       { new: true }
     );
@@ -225,9 +205,7 @@ const updateCandidate = async (req, res) => {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Candidate updated successfully" });
+    return res.status(200).json({ message: "Candidate updated successfully" });
   } catch {
     return res.status(500).json({ error: "Internal Server Error" });
   }
@@ -236,22 +214,18 @@ const updateCandidate = async (req, res) => {
 // Delete a candidate
 
 const deleteCandidate = async (req, res) => {
-  const id = req.params.id;
-  if (!id) {
-    return res.status(400).json({ error: "Candidate ID is required" });
-  }
-
   try {
-    const candidate = await candidateModel.findOne({ _id: id });
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ error: "Candidate ID is required" });
+    }
+
+    const candidate = await candidateModel.findOneAndDelete(id);
     if (!candidate) {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    await candidateModel.deleteOne({ _id: id });
-
-    return res
-      .status(200)
-      .json({ success: true, message: "Candidate deleted successfully" });
+    return res.status(200).json({ message: "Candidate deleted successfully" });
   } catch {
     return res.status(500).json({ error: "Internal Server Error" });
   }

@@ -1,30 +1,81 @@
 const zod = require("zod");
 const { v4: uuidv4 } = require("uuid");
 
-// Admin Validation Schema
 const adminValidationSchema = zod.object({
   firstName: zod.string().min(2).max(50).optional(),
   lastName: zod.string().min(2).max(50).optional(),
   email: zod.string().email().optional(),
   password: zod.string().min(6).optional(),
+  dateOfBirth: zod.date().optional(),
+  gender: zod.string().min(2).max(10).optional(),
+  streetAddress: zod.string().min(2).max(100).optional(),
   city: zod.string().min(2).max(50).optional(),
   state: zod.string().min(2).max(50).optional(),
   country: zod.string().min(2).max(50).optional(),
-  address: zod.string().min(2).max(100).optional(),
+  zipCode: zod.string().min(2).max(20).optional(),
+  phone: zod
+    .string()
+    .regex(/^\+?\d{10,15}$/, "Please enter a valid phone number")
+    .optional(),
+  permissions: zod.array(zod.string()).optional(),
+  createdBy: zod.string().optional(), // Assuming this is an ObjectId as a string
 });
 
 // User Validation Schema
 const userValidationSchema = zod.object({
-  firstName: zod.string().min(2).max(50).optional(),
-  lastName: zod.string().min(2).max(50).optional(),
-  email: zod.string().email().optional(),
-  password: zod.string().min(6).optional(),
-  dateOfBirth: zod.string().min(2).max(50).optional(),
-  gender: zod.string().min(2).max(10).optional(),
-  address: zod.string().min(2).max(100).optional(),
-  city: zod.string().min(2).max(50).optional(),
-  state: zod.string().min(2).max(50).optional(),
-  country: zod.string().min(2).max(50).optional(),
+  firstName: zod
+    .string()
+    .min(2, "First name must be at least 2 characters long")
+    .max(50, "First name must be at most 50 characters long")
+    .optional(),
+  lastName: zod
+    .string()
+    .min(2, "Last name must be at least 2 characters long")
+    .max(50, "Last name must be at most 50 characters long")
+    .optional(),
+  email: zod.string().email("Invalid email address").optional(),
+  password: zod
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .optional(),
+  dateOfBirth: zod.string().optional(), // Assuming date is in string format, otherwise use z.date()
+  gender: zod
+    .string()
+    .min(2, "Gender must be at least 2 characters long")
+    .max(10, "Gender must be at most 10 characters long")
+    .optional(),
+  streetAddress: zod
+    .string()
+    .min(2, "Street address must be at least 2 characters long")
+    .max(100, "Street address must be at most 100 characters long")
+    .optional(),
+  city: zod
+    .string()
+    .min(2, "City must be at least 2 characters long")
+    .max(50, "City must be at most 50 characters long")
+    .optional(),
+  state: zod
+    .string()
+    .min(2, "State must be at least 2 characters long")
+    .max(50, "State must be at most 50 characters long")
+    .optional(),
+  country: zod
+    .string()
+    .min(2, "Country must be at least 2 characters long")
+    .max(50, "Country must be at most 50 characters long")
+    .optional(),
+  zipCode: zod
+    .string()
+    .min(2, "Zip code must be at least 2 characters long")
+    .max(20, "Zip code must be at most 20 characters long")
+    .optional(),
+  phone: zod
+    .string()
+    .regex(/^\d{10,15}$/, "Please enter a valid phone number")
+    .optional(),
+  role: zod
+    .enum(["admin", "employee"], "Role must be either admin or employee")
+    .optional(),
 });
 
 // Password Validation Schema
@@ -34,126 +85,67 @@ const passwordValidationSchema = zod.object({
   confirmPassword: zod.string().min(6).max(50),
 });
 
-//Employee Validation Schema
 const employeeValidationSchema = zod.object({
-  employeeId: zod
-    .string()
-    .default(() => uuidv4())
-    .optional(),
-  firstName: zod.string().optional("First name is required"),
-  lastName: zod.string().optional("Last name is required"),
-  email: zod.string().email("Please use a valid email address").optional(),
-  password: zod.string().optional("Password is required"),
-  mobile: zod
-    .string()
-    .regex(/^\d{10}$/, "Please enter a valid 10-digit mobile number"),
-  address: zod.string().optional(),
-  city: zod.string().optional(),
-  state: zod.string().optional(),
-  zip: zod
-    .string()
-    .regex(/^\d{5}(-\d{4})?$/, "Please enter a valid ZIP code")
-    .optional(),
-  country: zod.string().optional(),
-  role: zod.string().optional(),
-  status: zod
-    .enum(["Active", "Inactive", "On Leave", "Terminated"])
-    .default("Active")
-    .optional(),
-  skills: zod.array(zod.string()).optional(),
-  department: zod.string().optional("Department is required"),
-  jobTitle: zod.string().optional("Job title is required"),
-  resume: zod.string().optional(),
-  idProof: zod.string().optional(),
-  panCard: zod.string().optional(),
-  marksheet: zod.string().optional(),
-  salary: zod.number().optional(),
-  dateOfJoining: zod.date().optional(),
+  employeeId: zod.string().default(() => uuidv4()).optional(),
+  firstName: zod.string().min(2, { message: "First name must be at least 2 characters long" }).max(50, { message: "First name must be at most 50 characters long" }).optional(),
+  lastName: zod.string().min(2, { message: "Last name must be at least 2 characters long" }).max(50, { message: "Last name must be at most 50 characters long" }).optional(),
+  email: zod.string().email({ message: "Please use a valid email address" }).optional(),
+  password: zod.string().min(6, { message: "Password must be at least 6 characters long" }).optional(),
   dateOfBirth: zod.date().optional(),
   gender: zod.enum(["Male", "Female", "Other"]).optional(),
-  emergencyContactName: zod.string().optional(),
-  emergencyContactPhone: zod
-    .string()
-    .regex(/^\d{10}$/, "Please enter a valid 10-digit phone number")
-    .optional(),
-  emergencyContactRelation: zod.string().optional(),
-  managerId: zod.string().optional(),
+  streetAddress: zod.string().min(2, { message: "Street address must be at least 2 characters long" }).max(100, { message: "Street address must be at most 100 characters long" }).optional(),
+  city: zod.string().min(2, { message: "City must be at least 2 characters long" }).max(50, { message: "City must be at most 50 characters long" }).optional(),
+  state: zod.string().min(2, { message: "State must be at least 2 characters long" }).max(50, { message: "State must be at most 50 characters long" }).optional(),
+  country: zod.string().min(2, { message: "Country must be at least 2 characters long" }).max(50, { message: "Country must be at most 50 characters long" }).optional(),
+  zipCode: zod.string().min(2, { message: "Zip code must be at least 2 characters long" }).max(20, { message: "zip code must be at most 20 characters long" }).optional(),
+  phone: zod.string().regex(/^\d{10,15}$/, { message: "Please enter a valid phone number" }).optional(),
+
+  department: zod.string().min(2, { message: "Department must be at least 2 characters long" }).max(50, { message: "Department must be at most 50 characters long" }).optional(),
+  position: zod.string().min(2, { message: "Position must be at least 2 characters long" }).max(50, { message: "Position must be at most 50 characters long" }).optional(),
+  dateOfJoining: zod.date().optional(),
+  salary: zod.number().optional(),
+  manager: zod.string().optional(), // Assuming this is an ObjectId as a string
   projects: zod.array(zod.string()).optional(),
-  performanceReviews: zod
-    .array(
-      zod.object({
-        reviewDate: zod.date().optional(),
-        reviewer: zod.string().optional(),
-        comments: zod.string().optional(),
-      })
-    )
-    .optional(),
-  lastLogin: zod.date().optional(),
-  dateCreated: zod
-    .date()
-    .default(() => new Date())
-    .optional(),
-  dateModified: zod.date().optional(),
+  isManager: zod.boolean().optional(),
+
+  status: zod.enum(["Active", "Inactive", "On Leave", "Terminated"]).default("Active").optional(),
+  idProof: zod.string().optional(),
 });
 
-//Candidate Validation Schema
 const candidateValidationSchema = zod.object({
-  candidateId: zod.string().uuid().optional(),
-  firstName: zod.string().trim().optional(),
-  lastName: zod.string().trim().optional(),
-  email: zod.string().trim().email().optional(),
-  mobile: zod.string().trim().optional(),
-  alternativeMobile: zod.string().trim().optional(),
-  skypeId: zod.string().trim().optional(),
-  linkedIn: zod.string().trim().url().optional(),
-  skills: zod.array(zod.string()).optional(),
+  firstName: zod.string().min(1).max(50).trim().optional(),
+  lastName: zod.string().min(1).max(50).trim().optional(),
+  email: zod.string().email().trim().optional(),
+  mobile: zod.string().regex(/^\d{10}$/, "Please enter a valid 10-digit mobile number").optional(),
+  linkedIn: zod.string().url().trim().optional(),
   resume: zod.string().optional(),
+  skills: zod.array(zod.string()).optional(),
   experience: zod.number().min(0).optional(),
-  currentCTC: zod.number().min(0).optional(),
-  expectedCTC: zod.number().min(0).optional(),
-  expectedJoiningDate: zod.date().optional(),
-  machineRound: zod.enum(["pending", "cleared", "failed"]).optional(),
-  technicalInterviewRound: zod
-    .enum(["pending", "cleared", "failed"])
-    .optional(),
-  hrInterviewRound: zod.enum(["pending", "cleared", "failed"]).optional(),
-  selectionStatus: zod.enum(["selected", "rejected", "on hold"]).optional(),
-  address: zod.string().trim().optional(),
-  idProof: zod.string().trim().optional(),
-  education: zod
-    .object({
-      tenthPercentage: zod.number().min(0).max(100).optional(),
-      twelfthPercentage: zod.number().min(0).max(100).optional(),
-      graduationPercentage: zod.number().min(0).max(100).optional(),
-    })
-    .optional(),
+  appliedPosition: zod.string().trim().optional(),
+  status: zod.enum(["applied", "shortlisted", "rejected"]).optional(),
+  idProof: zod.string().optional(),
+  notes: zod.string().optional(),
 });
 
 const expenseValidationSchema = zod.object({
-  purpose: zod.string().optional(),
-  billUrl: zod.string().url().optional(),
+  expenseId: zod.string().uuid().optional(),
+  employeeId: zod.string().optional(),
   amount: zod.number().min(0).optional(),
-  voucherUrl: zod.string().url().optional(),
-  remark: zod.string().optional(),
-  paymentMethod: zod
-    .enum(["cash", "cheque", "credit card", "bank transfer"])
-    .optional(),
-  cashReceivedBy: zod.string().optional(),
-  createdAt: zod.date().optional(),
-  updatedAt: zod.date().optional(),
+  description: zod.string().optional(),
+  dateOfExpense: zod.date().optional(),
+  status: zod.enum(["Pending", "approved", "rejected"]).optional(),
+  approvedBy: zod.string().optional(),
 });
 
 const helpCenterValidationSchema = zod.object({
-  ticketId: zod.string().optional(),
-  employeeId: zod.string().optional(),
-  description: zod.string().optional(),
-  priority: zod.enum(["Low", "Medium", "High"]).optional(),
+  ticketId: zod.string().uuid().optional(),
+  createdBy: zod.string().optional(), 
   department: zod.string().optional(),
+  issue: zod.string().min(1).max(255).optional(),
+  status: zod.enum(["open", "in progress", "resolved", "closed"]).optional(),
   dateOfCreation: zod.date().optional(),
-  status: zod.enum(["Open", "In Progress", "Closed"]).optional(),
-  dateOfCompletion: zod.date().optional(),
-  assignedTo: zod.string().optional(),
-  solvedBy: zod.string().optional(),
+  assignedTo: zod.string().optional(), 
+  resolvedDate: zod.date().optional(),
 });
 
 const consultancyValidationSchema = zod.object({
@@ -170,7 +162,7 @@ const consultancyValidationSchema = zod.object({
   servicesProvided: zod.array(zod.string()).optional(),
   contractStartDate: zod.date().nullable().optional(),
   contractEndDate: zod.date().nullable().optional(),
-  notes: zod.string().optional()
+  notes: zod.string().optional(),
 });
 
 module.exports = {

@@ -1,15 +1,10 @@
 const expenseModel = require("../models/expenseModel");
 const { expenseValidationSchema } = require("../middleware/schemaValidator");
 
-const parseISODate = (isoDateString) => {
-  const dateParts = isoDateString.split("T")[0]; // Split at 'T' and take the date part
-  return new Date(dateParts);
-};
-
 // Add an expense
 const addExpense = async (req, res) => {
   try {
-    req.body.dateOfExpense = parseISODate(req.body.dateOfExpense);
+    req.body.dateOfExpense = new Date(req.body.dateOfExpense);
     const { success, data, error } = expenseValidationSchema.safeParse(
       req.body
     );
@@ -37,18 +32,10 @@ const addExpense = async (req, res) => {
 const getExpenses = async (req, res) => {
   try {
     const expenses = await expenseModel.find();
-    const expenseData = expenses.map((expense) => {
-      return {
-        id: expense._id,
-        purpose: expense.purpose,
-        remark: expense.remark,
-        amount: expense.amount,
-        PaymentMethod: expense.paymentMethod,
-        dateOfExpense: expense.dateOfExpense,
-      };
+    res.status(200).json({
+      message: "Expenses fetched successfully",
+      data: expenses,
     });
-
-    res.status(200).json(expenseData);
   } catch (err) {
     console.error("Error getting expenses:", err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -58,7 +45,7 @@ const getExpenses = async (req, res) => {
 // Get an expense by ID
 const getExpenseById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "ID is required" });
     }
@@ -68,16 +55,10 @@ const getExpenseById = async (req, res) => {
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
     }
-    const expenseData = {
-      id: expense._id,
-      purpose: expense.purpose,
-      remark: expense.remark,
-      amount: expense.amount,
-      PaymentMethod: expense.paymentMethod,
-      dateOfExpense: expense.dateOfExpense,
-    };
-
-    res.status(200).json(expenseData);
+    res.status(200).json({
+      message: "Expense fetched successfully",
+      data: expense,
+    });
   } catch (err) {
     console.error("Error getting expense by ID:", err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -87,9 +68,12 @@ const getExpenseById = async (req, res) => {
 // Update an expense by ID
 const updateExpense = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "ID is required" });
+    }
+    if (req.body.dateOfExpense) {
+      req.body.dateOfExpense = new Date(req.body.dateOfExpense);
     }
 
     const { success, data, error } = expenseValidationSchema.safeParse(
@@ -111,7 +95,6 @@ const updateExpense = async (req, res) => {
 
     res.status(200).json({
       message: "Expense updated successfully",
-      expense: updatedExpense,
     });
   } catch (err) {
     console.error("Error updating expense:", err);
@@ -122,7 +105,7 @@ const updateExpense = async (req, res) => {
 // Delete an expense by ID
 const deleteExpense = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "ID is required" });
     }

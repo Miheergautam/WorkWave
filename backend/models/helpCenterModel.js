@@ -1,54 +1,29 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const helpCenterSchema = new mongoose.Schema(
   {
-    ticketId: {
-      type: String,
-      required: true,
-      index: true, // Index for faster search
-    },
-    employeeId: {
-      type: String,
-      required: true,
-      index: true, // Index for faster search
-    },
-    description: {
-      type: String,
-    },
-    priority: {
-      type: String,
-      enum: ["Low", "Medium", "High"], // Using enum to restrict values
-    },
-    department: {
-      type: String,
+    ticketId: { type: String, default: uuidv4(), unique: true },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-    dateOfCreation: {
-      type: Date,
-      required: true,
-      default: Date.now, // Default to current date if not provided
-    },
+    issue: { type: String, required: true },
+    department: { type: String, required: true },
     status: {
       type: String,
-      enum: ["Open", "In Progress", "Closed"], // Using enum to restrict values
+      enum: ["open", "in progress", "resolved", "closed"],
+      default: "open",
     },
-    dateOfCompletion: {
-      type: Date,
-    },
-    assignedTo: {
-      type: String,
-    },
-    solvedBy: {
-      type: String,
-    },
+    dateOfCreation: { type: Date, default: Date.now },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    resolvedDate: { type: Date },
   },
   {
     timestamps: true, // Automatically add createdAt and updatedAt fields
   }
 );
-
-// Index for faster search on multiple fields
-helpCenterSchema.index({ ticketId: 1, employeeId: 1 });
 
 const HelpCenter = mongoose.model("HelpCenter", helpCenterSchema);
 

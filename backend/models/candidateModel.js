@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
+// Define the candidate schema
 const candidateSchema = new mongoose.Schema(
   {
+    // Unique identifier for each candidate, generated using UUID v4
     candidateId: {
       type: String,
       default: uuidv4,
@@ -10,34 +12,28 @@ const candidateSchema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-      required: true,
+      required: [true, "First name is required"],
       trim: true,
     },
     lastName: {
       type: String,
-      required: true,
+      required: [true, "Last name is required"],
       trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       trim: true,
       lowercase: true,
     },
+
     mobile: {
       type: String,
-      required: true,
+      required: [true, "Mobile number is required"],
       unique: true,
       trim: true,
-    },
-    alternativeMobile: {
-      type: String,
-      trim: true,
-    },
-    skypeId: {
-      type: String,
-      trim: true,
+      match: [/^\d{10}$/, "Please enter a valid 10-digit mobile number"],
     },
     linkedIn: {
       type: String,
@@ -50,71 +46,38 @@ const candidateSchema = new mongoose.Schema(
       type: [String],
     },
     experience: {
-      type: Number, // Assuming experience in years
-      min: 0,
+      type: Number,
+      min: [0, "Experience cannot be negative"],
     },
-    currentCTC: {
-      type: Number, // Assuming CTC as a number
-      min: 0,
-    },
-    expectedCTC: {
-      type: Number, // Assuming CTC as a number
-      min: 0,
-    },
-    expectedJoiningDate: {
-      type: Date,
-    },
-    machineRound: {
-      type: String,
-      enum: ["pending", "cleared", "failed"],
-    },
-    technicalInterviewRound: {
-      type: String,
-      enum: ["pending", "cleared", "failed"],
-    },
-    hrInterviewRound: {
-      type: String,
-      enum: ["pending", "cleared", "failed"],
-    },
-    selectionStatus: {
-      type: String,
-      enum: ["selected", "rejected", "on hold"],
-    },
-    address: {
+    appliedPosition: {
       type: String,
       trim: true,
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ["applied", "shortlisted", "rejected"],
+        message: "Invalid status value",
+      },
+      default: "applied",
+    },
+    appliedDate: {
+      type: Date,
+      default: Date.now,
     },
     idProof: {
       type: String,
       trim: true,
     },
-    education: {
-      tenthPercentage: {
-        type: Number,
-        min: 0,
-        max: 100,
-      },
-      twelfthPercentage: {
-        type: Number,
-        min: 0,
-        max: 100,
-      },
-      graduationPercentage: {
-        type: Number,
-        min: 0,
-        max: 100,
-      },
+    notes: {
+      type: String,
     },
   },
   {
-    timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    },
+    timestamps: true,
   }
 );
 
-candidateSchema.index({ email: 1, mobile: 1 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);
 

@@ -1,55 +1,27 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const { v4: uuidv4 } = require("uuid");
 
-const ExpensesSchema = new Schema({
-  purpose: {
-    type: String,
-    required: true,
-    trim: true,
+const ExpensesSchema = new Schema(
+  {
+    expenseId: { type: String, default: uuidv4(), unique: true },
+    employeeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      required: true,
+    },
+    amount: { type: Number, required: true },
+    description: { type: String },
+    dateOfExpense: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: ["Pending", "approved", "rejected"],
+      default: "Pending",
+    },
+    approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
   },
-  billUrl: {
-    type: String,
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  voucherUrl: {
-    type: String,
-  },
-  remark: {
-    type: String,
-    trim: true,
-  },
-  paymentMethod: {
-    type: String,
-    enum: ["cash", "cheque", "credit card", "bank transfer"],
-    required: true,
-  },
-  cashReceivedBy: {
-    type: String,
-    trim: true,
-  },
-  dateOfExpense: {
-    type: Date,
-    default: Date.now,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-ExpensesSchema.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
+  (timestamp = true)
+);
 
 const Expense = mongoose.model("Expense", ExpensesSchema);
 

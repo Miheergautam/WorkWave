@@ -1,17 +1,23 @@
 const employeeModel = require("../models/employeeModel");
-const bcrypt = require("bcrypt");
-const fs = require("fs");
 const { employeeValidationSchema } = require("../middleware/schemaValidator");
+
+const fs = require("fs");
+const User = require("../models/userModel");
 
 /// Create Employee
 const createEmployee = async (req, res) => {
   // Validate input data against the schema
-  const { success, data, error } = employeeValidationSchema.safeParse(req.body);
-  if (!success) {
-    return res.status(400).json({ success: false, errors: error.errors });
-  }
 
   try {
+    req.body.dateOfBirth = new Date(req.body.dateOfBirth);
+    req.body.dateOfJoining = new Date(req.body.dateOfJoining);
+
+    const { success, data, error } = employeeValidationSchema.safeParse(
+      req.body
+    );
+    if (!success) {
+      return res.status(400).json({ success: false, errors: error.errors });
+    }
     // Check if employee already exists
     const employeeExists = await employeeModel.findOne({ email: data.email });
     if (employeeExists) {
@@ -20,7 +26,7 @@ const createEmployee = async (req, res) => {
         .json({ success: false, error: "Employee already exists" });
     }
 
-    // Directory setup
+    /* // Directory setup
     const uploadDir = process.cwd() + "/public/";
     const resumePdfUploadDir = uploadDir + "employee/resume_pdf/";
     const idProofPdfUploadDir = uploadDir + "employee/proof_pdf/";
@@ -98,31 +104,26 @@ const createEmployee = async (req, res) => {
       : "";
     const marksheetFullPdfUrl = marksheetPromise.finalname
       ? `employee/marksheet_pdf/${marksheetPromise.finalname}`
-      : "";
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+      : ""; */
 
     // Create new employee
-    const employee = new employeeModel({
+    const newEmployee = new employeeModel({
       ...data,
-      password: hashedPassword,
-      resume: resumeFullPdfUrl,
+      /* resume: resumeFullPdfUrl,
       idProof: proofFullPdfUrl,
       panCard: panFullPdfUrl,
-      marksheet: marksheetFullPdfUrl,
+      marksheet: marksheetFullPdfUrl, */
     });
 
     // Save employee to database
-    await employee.save();
+    await newEmployee.save();
 
     return res.status(201).json({
-      success: true,
       message: "Employee created successfully!",
-      data: employee,
+      UserId: newEmployee._id,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -130,22 +131,12 @@ const createEmployee = async (req, res) => {
 const listEmployees = async (req, res) => {
   try {
     // Fetch all employee data from the database
-    const employees = await employeeModel.find();
+    const employees = await employeeModel.find().select("-password");
 
-    // Map the employee data to include only the required fields
-    const employeesData = employees.map((employee) => {
-      return {
-        employeeId: employee.employeeId,
-        userId: employee._id,
-        firstName: employee.firstName,
-        lastName: employee.lastName,
-        email: employee.email,
-        phone: employee.phone,
-        role: employee.role,
-      };
+    return res.status(200).json({
+      messsage: "Employees fetched successfully",
+      data: employees,
     });
-
-    return res.status(200).json({ success: true, data: employeesData });
   } catch (error) {
     // Return error response if something goes wrong
     return res.status(500).json({ success: false, error: error.message });
@@ -154,10 +145,16 @@ const listEmployees = async (req, res) => {
 
 // Get Employee by ID
 const getEmployee = async (req, res) => {
-  const id = req.params.id;
   try {
+    const id = req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Employee ID is required" });
+    }
+
     // Fetch employee data by ID from the database
-    const employee = await employeeModel.findById(id);
+    const employee = await employeeModel.findById(id).select("-password");
 
     // Return error response if employee not found
     if (!employee) {
@@ -166,17 +163,10 @@ const getEmployee = async (req, res) => {
         .json({ success: false, error: "Employee not found" });
     }
 
-    const employeeData = {
-      employeeId: employee.employeeId,
-      userId: employee._id,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      email: employee.email,
-      phone: employee.phone,
-      role: employee.role,
-    };
-
-    return res.status(200).json({ success: true, data: employeeData });
+    return res.status(200).json({
+      message: "Employee fetched successfully",
+      data: employee,
+    });
   } catch (error) {
     // Return error response if something goes wrong
     return res.status(500).json({ success: false, error: error.message });
@@ -185,26 +175,27 @@ const getEmployee = async (req, res) => {
 
 // Update Employee
 const updateEmployee = async (req, res) => {
-  const id = req.params.id; // Use req.params.id
-  if (!id) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Employee ID is required" });
-  }
-
-  const { success, data, error } = employeeValidationSchema.safeParse(req.body);
-  if (!success) {
-    return res.status(400).json({ success: false, errors: error.errors });
-  }
-
   try {
+    const id = req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Employee ID is required" });
+    }
+
+    const { success, data, error } = employeeValidationSchema.safeParse(
+      req.body
+    );
+    if (!success) {
+      return res.status(400).json({ success: false, errors: error.errors });
+    }
     if (data.email !== undefined) {
       res
         .status(400)
         .json({ success: false, error: "Email cannot be updated" });
     }
 
-    // Directory setup
+    /* // Directory setup
     const uploadDir = process.cwd() + "/public/";
     const resumePdfUploadDir = uploadDir + "employee/resume_pdf/";
     const idProofPdfUploadDir = uploadDir + "employee/proof_pdf/";
@@ -282,28 +273,23 @@ const updateEmployee = async (req, res) => {
       : data.panCard;
     const marksheetFullPdfUrl = marksheetPromise.finalname
       ? `employee/marksheet_pdf/${marksheetPromise.finalname}`
-      : data.marksheet;
-
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+      : data.marksheet; */
 
     const updatedEmployee = await employeeModel.findByIdAndUpdate(
       id,
       {
         ...data,
-        resume: resumeFullPdfUrl,
+        /* resume: resumeFullPdfUrl,
         idProof: proofFullPdfUrl,
         panCard: panFullPdfUrl,
-        marksheet: marksheetFullPdfUrl,
-        password: hashedPassword,
+        marksheet: marksheetFullPdfUrl, */
       },
       { new: true, runValidators: true }
     );
 
     if (updatedEmployee) {
       return res.status(200).json({
-        success: true,
         message: "Employee updated successfully!",
-        data: updatedEmployee,
       });
     } else {
       return res
@@ -317,25 +303,21 @@ const updateEmployee = async (req, res) => {
 
 // Delete Employee
 const deleteEmployee = async (req, res) => {
-  const id = req.params.id;
-  if (!id) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Employee ID is required" });
-  }
-
   try {
+    const id = req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Employee ID is required" });
+    }
     const deletedEmployee = await employeeModel.findByIdAndDelete(id);
 
-    if (deletedEmployee) {
-      return res
-        .status(200)
-        .json({ success: true, message: "Employee deleted successfully!" });
-    } else {
+    if (!deletedEmployee) {
       return res
         .status(404)
         .json({ success: false, error: "Employee not found" });
     }
+    return res.status(200).json({ message: "Employee deleted successfully!" });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
