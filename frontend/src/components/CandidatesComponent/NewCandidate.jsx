@@ -2,7 +2,7 @@ import Img from "../../assets/images/logo.png";
 import { InputBox } from "../InfoComponents/InputBox";
 import { useNavigate } from "react-router-dom";
 
-export function NewCandidtate() {
+export function NewCandidate() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {

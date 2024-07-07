@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import { register } from "../services/authService";
 
 // COMPONENTS
 import { Heading } from "../components/InfoComponents/Heading";
@@ -21,19 +22,14 @@ export function SignUp() {
 
   const handleSignUp = async () => {
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/user/register`,
-        {
-          firstName: firstname,
-          lastName: lastname,
-          email: email,
-          password: password,
-        }
-      );
+      const result = await register({
+        firstName: firstname,
+        lastName: lastname,
+        email: email,
+        password: password,
+      });
 
-      if (response.data) {
-        localStorage.setItem("userId", response.data.userId);
-        localStorage.setItem("token", `Bearer ${response.data.token}`);
+      if (result) {
         toast.success("Signed up successfully!", {
           position: "top-right",
           autoClose: 1000,
@@ -44,21 +40,22 @@ export function SignUp() {
           progress: undefined,
         });
         setTimeout(() => navigate("/signin"), 1500); // Navigate after the toast notification
+      } else {
+        toast.error(
+          "Failed to sign up. Please check your details and try again.",
+          {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          }
+        );
       }
     } catch (error) {
       console.error("Error during sign-up:", error);
-      toast.error(
-        "Failed to sign up. Please check your details and try again.",
-        {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-        }
-      );
     }
   };
 
@@ -72,32 +69,28 @@ export function SignUp() {
           label="Firstname"
           placeholder="Enter your Firstname"
           type="text"
-          onChange={(e) => {
-            setFirstname(e.target.value);
-          }}
+          value={firstname}
+          onChange={(e) => setFirstname(e.target.value)}
         />
         <InputBox
           label="Lastname"
           placeholder="Enter your Lastname"
           type="text"
-          onChange={(e) => {
-            setLastname(e.target.value);
-          }}
+          value={lastname}
+          onChange={(e) => setLastname(e.target.value)}
         />
         <InputBox
           label="Email"
           placeholder="Enter your email"
           type="email"
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <PasswordInputBox
           label="Password"
           placeholder="Enter your password"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <div className="mt-6">
           <Button label="Sign Up" onClick={handleSignUp} />
