@@ -1,5 +1,4 @@
 const zod = require("zod");
-const { v4: uuidv4 } = require("uuid");
 
 const adminValidationSchema = zod.object({
   firstName: zod.string().min(2).max(50).optional(),
@@ -74,7 +73,7 @@ const userValidationSchema = zod.object({
     .regex(/^\d{10,15}$/, "Please enter a valid phone number")
     .optional(),
   role: zod
-    .enum(["admin", "employee"], "Role must be either admin or employee")
+    .enum(["Admin", "Employee"], "Role must be either admin or employee")
     .optional(),
 });
 
@@ -86,7 +85,7 @@ const passwordValidationSchema = zod.object({
 });
 
 const employeeValidationSchema = zod.object({
-  employeeId: zod.string().default(() => uuidv4()).optional(),
+  employeeId: zod.string().optional(),
   firstName: zod.string().min(2, { message: "First name must be at least 2 characters long" }).max(50, { message: "First name must be at most 50 characters long" }).optional(),
   lastName: zod.string().min(2, { message: "Last name must be at least 2 characters long" }).max(50, { message: "Last name must be at most 50 characters long" }).optional(),
   email: zod.string().email({ message: "Please use a valid email address" }).optional(),
@@ -128,7 +127,7 @@ const candidateValidationSchema = zod.object({
 });
 
 const expenseValidationSchema = zod.object({
-  expenseId: zod.string().uuid().optional(),
+  expenseId: zod.string().optional(),
   employeeId: zod.string().optional(),
   amount: zod.number().min(0).optional(),
   description: zod.string().optional(),
@@ -138,7 +137,7 @@ const expenseValidationSchema = zod.object({
 });
 
 const helpCenterValidationSchema = zod.object({
-  ticketId: zod.string().uuid().optional(),
+  ticketId: zod.string().optional(),
   createdBy: zod.string().optional(), 
   department: zod.string().optional(),
   issue: zod.string().min(1).max(255).optional(),
