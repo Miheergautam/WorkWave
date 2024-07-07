@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
 
 // Define the candidate schema
 const candidateSchema = new mongoose.Schema(
@@ -7,7 +6,7 @@ const candidateSchema = new mongoose.Schema(
     // Unique identifier for each candidate, generated using UUID v4
     candidateId: {
       type: String,
-      default: uuidv4,
+      required: [true, "Candidate ID is required"],
       unique: true,
     },
     firstName: {

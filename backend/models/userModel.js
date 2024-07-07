@@ -69,16 +69,13 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  { timestamps: true, discriminatorKey: "role"}
+  { timestamps: true, discriminatorKey: "role" }
 );
 
 // Virtual for user's full name
 userSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
-
-// Indexes
-userSchema.index({ email: 1 });
 
 // Methods
 userSchema.methods.comparePassword = async function (candidatePassword) {

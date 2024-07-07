@@ -21,9 +21,11 @@ const createEmployee = async (req, res) => {
     // Check if employee already exists
     const employeeExists = await employeeModel.findOne({ email: data.email });
     if (employeeExists) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Employee already exists" });
+      return res.status(400).json({
+        success: false,
+        error: "Employee already exists!",
+        message: "Please update the Employee to Continue",
+      });
     }
 
     /* // Directory setup

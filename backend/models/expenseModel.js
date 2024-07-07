@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const { v4: uuidv4 } = require("uuid");
+const User = require("./userModel");
 
 const ExpensesSchema = new Schema(
   {
-    expenseId: { type: String, default: uuidv4(), unique: true },
-    employeeId: {
+    expenseId: { type: String, required: true, unique: true },
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Employee",
+      ref: "User",
       required: true,
     },
     amount: { type: Number, required: true },

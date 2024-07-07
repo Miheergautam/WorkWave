@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+const User = require("./userModel");
 
 const helpCenterSchema = new mongoose.Schema(
   {
-    ticketId: { type: String, default: uuidv4(), unique: true },
+    ticketId: { type: String, unique: true },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
