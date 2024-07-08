@@ -8,7 +8,8 @@ router.post("/signin", userController.userSignin);
 router.put("/update", authenticateUser, userController.userUpdate); // Ensure authenticateUser is a valid middleware
 router.put("/changePassword", authenticateUser, userController.changePassword);
 router.get("/list", userController.getUsers);
-router.get("/get", userController.getUserById);
-router.delete("/delete", userController.deleteUser);
+router.get("/get/:id", userController.getUserById);
+router.delete("/delete/:id", userController.deleteUser);
+router.get("/search", userController.searchUser);
 
 module.exports = router;

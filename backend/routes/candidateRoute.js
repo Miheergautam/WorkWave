@@ -7,5 +7,6 @@ router.get("/get", candidateController.getAllCandidates);
 router.get("/get/:id", candidateController.getCandidate);
 router.put("/update/:id", candidateController.updateCandidate);
 router.delete("/delete/:id", candidateController.deleteCandidate);
+router.get("/search", candidateController.searchCandidate);
 
 module.exports = router;

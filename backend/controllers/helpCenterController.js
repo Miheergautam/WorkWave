@@ -122,10 +122,49 @@ const deleteTicket = async (req, res) => {
   }
 };
 
+const searchTicket = async (req, res) => {
+  try {
+    const { search: query } = req.query;
+
+    // Validate the search query
+    if (!query) {
+      return res.status(400).json({ error: "No search query provided" });
+    }
+
+    // Construct the search query
+    const searchQuery = {
+      $or: [
+        { issue: { $regex: new RegExp(query, "i") } },
+        { department: { $regex: new RegExp(query, "i") } },
+        { status: { $regex: new RegExp(query, "i") } },
+        { dateOfCreation: { $regex: new RegExp(query, "i") } },
+      ],
+    };
+
+    // Perform search using Mongoose's find method
+    const results = await helpCenterModel.find(searchQuery);
+
+    // Return the search results
+    res.status(200).json({
+      message: "Searching Tickets successful",
+      data: results,
+    });
+  } catch (err) {
+    // Log the error for debugging purposes
+    console.error("Error occurred during search:", err);
+
+    // Return a 500 status code with a generic error message
+    res
+      .status(500)
+      .json({ success: false, status: 500, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   createHelpTicket,
   getAllTickets,
   getTicketById,
   updateTicket,
   deleteTicket,
+  searchTicket,
 };

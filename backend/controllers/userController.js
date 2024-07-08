@@ -1,11 +1,9 @@
 const userModel = require("../models/userModel");
-const employeeModel = require("../models/employeeModel");
 const {
   userValidationSchema,
   passwordValidatorSchema,
 } = require("../middleware/schemaValidator");
 const jwt = require("jsonwebtoken");
-const Employee = require("../models/employeeModel");
 
 // User Register
 const userRegister = async (req, res) => {
@@ -205,6 +203,59 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const searchUser = async (req, res) => {
+  try {
+    const { search: query } = req.query;
+
+    // Validate the search query
+    if (!query) {
+      return res.status(400).json({ error: "No search query provided" });
+    }
+
+    // Construct the search query
+    const searchQuery = {
+      $or: [
+        { firstName: { $regex: new RegExp(query, "i") } },
+        { lastName: { $regex: new RegExp(query, "i") } },
+        { email: { $regex: new RegExp(query, "i") } },
+        { gender: { $regex: new RegExp(query, "i") } },
+        { state: { $regex: new RegExp(query, "i") } },
+        { role: { $regex: new RegExp(query, "i") } },
+      ],
+    };
+
+    // Check if the query contains both first and last names
+    if (query.includes(" ")) {
+      const [firstName, lastName] = query.split(" ");
+
+      // Update search query to match both first and last names together
+      searchQuery.$or.push({
+        $and: [
+          { firstName: { $regex: new RegExp(firstName, "i") } },
+          { lastName: { $regex: new RegExp(lastName, "i") } },
+        ],
+      });
+    }
+
+    // Perform search using Mongoose's find method
+    const results = await userModel.find(searchQuery).select("-password");
+
+    // Return the search results
+    res.status(200).json({
+      message: "Searching users successful",
+      data: results,
+    });
+  } catch (err) {
+    // Log the error for debugging purposes
+    console.error("Error occurred during search:", err);
+
+    // Return a 500 status code with a generic error message
+    res
+      .status(500)
+      .json({ success: false, status: 500, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   userRegister,
   userSignin,
@@ -213,4 +264,5 @@ module.exports = {
   getUsers,
   getUserById,
   deleteUser,
+  searchUser,
 };

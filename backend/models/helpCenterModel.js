@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
-const User = require("./userModel");
 
 const helpCenterSchema = new mongoose.Schema(
   {
-    ticketId: { type: String, unique: true },
+    ticketId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

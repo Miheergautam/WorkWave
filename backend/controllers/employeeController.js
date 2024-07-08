@@ -325,6 +325,7 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
+
 module.exports = {
   createEmployee,
   listEmployees,
