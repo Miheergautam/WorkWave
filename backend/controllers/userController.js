@@ -1,7 +1,7 @@
 const userModel = require("../models/userModel");
 const {
   userValidationSchema,
-  passwordValidatorSchema,
+  passwordValidationSchema,
 } = require("../middleware/schemaValidator");
 const jwt = require("jsonwebtoken");
 
@@ -121,7 +121,7 @@ const changePassword = async (req, res) => {
         .status(400)
         .json({ message: "UnAuthorized , UserId is Required" });
 
-    const { success, data, error } = passwordValidatorSchema.safeParse(
+    const { success, data, error } = passwordValidationSchema.safeParse(
       req.body
     );
     if (!success) {
@@ -134,19 +134,22 @@ const changePassword = async (req, res) => {
     }
 
     if (data.confirmPassword === data.newPassword) {
-      const updatedUser = await userModel.findByIdAndUpdate(
-        id,
-        { $set: { password: data.newPassword } },
-        { new: true, runValidators: true }
-      );
-
-      if (updatedUser) {
-        return res
-          .status(200)
-          .json({ message: "Password updated successfully" });
-      } else {
-        return res.status(404).json({ message: "User not found" });
+      // Check if the password is correct
+      const isPasswordMatch = await user.comparePassword(data.currentPassword);
+      if (!isPasswordMatch) {
+        return res.status(400).json({ message: "Invalid current password" });
       }
+
+      // Update the password
+      user.password = data.newPassword;
+      await user.save();
+
+      // Send response
+      res.status(200).json({
+        message: "Password changed successfully",
+      });
+    } else {
+      return res.status(400).json({ message: "Password does not match" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -179,7 +182,17 @@ const getUserById = async (req, res) => {
 
     res.status(200).json({
       message: "User fetched successfully",
-      data: user,
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        streetAddress: user.streetAddress,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

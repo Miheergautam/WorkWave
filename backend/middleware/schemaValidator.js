@@ -79,9 +79,9 @@ const userValidationSchema = zod.object({
 
 // Password Validation Schema
 const passwordValidationSchema = zod.object({
-  currentPassword: zod.string().min(6).max(50),
-  newPassword: zod.string().min(6).max(50),
-  confirmPassword: zod.string().min(6).max(50),
+  currentPassword: zod.string().min(6).max(50).optional(),
+  newPassword: zod.string().min(6).max(50).optional(),
+  confirmPassword: zod.string().min(6).max(50).optional(),
 });
 
 const employeeValidationSchema = zod.object({
@@ -112,11 +112,13 @@ const employeeValidationSchema = zod.object({
 });
 
 const candidateValidationSchema = zod.object({
+  candidateId: zod.string().optional(),
   firstName: zod.string().min(1).max(50).trim().optional(),
   lastName: zod.string().min(1).max(50).trim().optional(),
   email: zod.string().email().trim().optional(),
   mobile: zod.string().regex(/^\d{10}$/, "Please enter a valid 10-digit mobile number").optional(),
-  linkedIn: zod.string().url().trim().optional(),
+  gender: zod.enum(["Male", "Female", "Other"]).optional(),
+  linkedIn: zod.string().trim().optional(),
   resume: zod.string().optional(),
   skills: zod.array(zod.string()).optional(),
   experience: zod.number().min(0).optional(),
