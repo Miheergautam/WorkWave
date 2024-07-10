@@ -69,12 +69,9 @@ const createCandidate = async (req, res) => {
       ? `/candidates/resumes/${resumePromise.finalname}`
       : ""; */
 
-    const newCandidate = new candidateModel({
-      ...data,
-      /* resume: resumeFullPdfUrl, */
-    });
-
+    const newCandidate = new candidateModel(data);
     await newCandidate.save();
+
 
     return res.status(201).json({ message: "Candidate created successfully" });
   } catch {
@@ -115,7 +112,21 @@ const getCandidate = async (req, res) => {
 
     return res.status(200).json({
       message: "Candidate fetched successfully",
-      data: candidate,
+      data: {
+        candidateId: candidate.candidateId,
+        firstName: candidate.firstName,
+        lastName: candidate.lastName,
+        email: candidate.email,
+        mobile: candidate.mobile,
+        gender: candidate.gender,
+        linkedIn: candidate.linkedIn,
+        resume: candidate.resume,
+        skills: candidate.skills,
+        experience: candidate.experience,
+        appliedPosition: candidate.appliedPosition,
+        status: candidate.status,
+        idProof: candidate.idProof,
+      },
     });
   } catch (error) {
     console.error("Error fetching candidate:", error);
@@ -192,12 +203,9 @@ const updateCandidate = async (req, res) => {
       ? `/candidates/resumes/${resumePromise.finalname}`
       : "";
  */
-    const updatedCandidate = await candidateModel.findOneAndUpdate(
-      { _id: id },
-      {
-        ...data,
-        /* resume: resumeFullPdfUrl, */
-      },
+    const updatedCandidate = await candidateModel.findByIdAndUpdate(
+      id,
+      { $set: data },
       { new: true }
     );
 

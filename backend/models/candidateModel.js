@@ -26,11 +26,17 @@ const candidateSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    gender: {
+      type: String,
+      enum: {
+        values: ["Male", "Female", "Other"],
+        message: "Invalid gender value",
+      },
+    },
 
     mobile: {
       type: String,
       required: [true, "Mobile number is required"],
-      unique: true,
       trim: true,
       match: [/^\d{10}$/, "Please enter a valid 10-digit mobile number"],
     },
@@ -66,7 +72,6 @@ const candidateSchema = new mongoose.Schema(
     },
     idProof: {
       type: String,
-      trim: true,
     },
     notes: {
       type: String,
@@ -76,7 +81,6 @@ const candidateSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 
 const Candidate = mongoose.model("Candidate", candidateSchema);
 

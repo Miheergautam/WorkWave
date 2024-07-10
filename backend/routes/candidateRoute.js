@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const candidateController = require("../controllers/candidateController");
+const authenticateUser = require("../middleware/authMiddleware");
 
 router.post("/create", candidateController.createCandidate);
 router.get("/get", candidateController.getAllCandidates);
