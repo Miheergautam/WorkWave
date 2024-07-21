@@ -5,47 +5,33 @@ import { useState } from "react";
 import { Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+import { useEmployee } from "../../contexts/EmployeeContext";
+
 export function ManageEmployees() {
   const [searchInput, setSearchInput] = useState("");
   const [isFetched, setIsFetched] = useState(false);
   const navigate = useNavigate();
-
-  // Sample employee data
-  const employees = [
-    {
-      id: 1,
-      name: "John Doe",
-      department: "HR",
-      position: "Manager",
-      project: "Project A",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      department: "IT",
-      position: "Developer",
-      project: "Project B",
-    },
-    {
-      id: 3,
-      name: "Sam Johnson",
-      department: "Finance",
-      position: "Accountant",
-      project: "Project C",
-    },
-    // Add more employees as needed
-  ];
+  const [employeeData, setEmployeeData] = useState([]);
+  const { fetchedData, setSelectedEmployee } = useEmployee();
 
   const handleSearchInput = (e) => {
     setSearchInput(e.target.value);
   };
 
   const handleSearchClick = () => {
-    // Placeholder for search logic
+    setEmployeeData(
+      fetchedData.filter(
+        (employee) => employee.employeeId && employee.employeeId !== ""
+      )
+    );
     setIsFetched(true);
   };
 
   const handleEdit = (id) => {
+    const employee = employeeData.find((e) => e._id === id);
+    if (employee) {
+      setSelectedEmployee(employee);
+    }
     // Placeholder for edit logic
     navigate(`/home/employee/edit`);
   };
@@ -78,17 +64,20 @@ export function ManageEmployees() {
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
-                <tr key={employee.id} className="border border-neutral-600">
-                  <td className="py-3">{employee.id}</td>
-                  <td>{employee.name}</td>
+              {employeeData.map((employee) => (
+                <tr
+                  key={employee.employeeId}
+                  className="border border-neutral-600"
+                >
+                  <td className="py-3">{employee.employeeId}</td>
+                  <td>{`${employee.firstName} ${employee.lastName}`}</td>
                   <td>{employee.department}</td>
                   <td>{employee.position}</td>
-                  <td>{employee.project}</td>
+                  <td>{employee.project ? employee.project[0] : "None"}</td>
                   <td>
                     <Edit
                       className="w-6 h-6 cursor-pointer text-yellow-500"
-                      onClick={() => handleEdit(employee.id)}
+                      onClick={() => handleEdit(employee._id)}
                     />
                   </td>
                 </tr>

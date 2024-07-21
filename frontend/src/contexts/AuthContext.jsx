@@ -1,43 +1,47 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  console.log("AuthContext.jsx");
+  const [auth, setAuth] = useState(localStorage.getItem("token"));
+  console.log("AuthContext.jsx auth:", auth);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
-      } catch (error) {
-        console.error("Invalid token:", error);
-      }
+      setAuth(token);
     }
+    console.log(" inside use effect AuthContext.jsx token:", token);
   }, []);
 
   const login = (userData) => {
-    setUser(userData);
-    navigate("/home");
+    setAuth(userData);
   };
 
   const logout = () => {
-    setUser(null);
+    setAuth(null);
     localStorage.removeItem("token");
-    navigate("/signin");
   };
 
+  const contextValue = React.useMemo(
+    () => ({
+      auth,
+      login,
+      logout,
+    }),
+    [auth]
+  );
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+export const useUser = () => {
   return useContext(AuthContext);
 };

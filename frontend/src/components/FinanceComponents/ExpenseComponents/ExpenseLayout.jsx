@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SearchBar } from "../../others/SearchBar";
 import { MdSearch } from "react-icons/md";
-import { set } from "mongoose";
 
 const expenses = [
   {
@@ -63,7 +62,7 @@ export function ExpenseLayout() {
 
   return (
     <div className="flex flex-col">
-      <div className="mt-4 py-2 px-4 bg-neutral-900 border border-neutral-600 rounded-lg">
+      {/* <div className="mt-4 py-2 px-4 bg-neutral-900 border border-neutral-600 rounded-lg">
         <div className="flex justify-center items-center gap-4 my-4 border border-neutral-600 rounded-xl bg-neutral-900">
           <SearchBar
             label={"Search By Employee Id..."}
@@ -103,7 +102,7 @@ export function ExpenseLayout() {
             </tbody>
           </table>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

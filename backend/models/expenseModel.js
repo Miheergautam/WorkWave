@@ -4,18 +4,18 @@ const User = require("./userModel");
 
 const ExpensesSchema = new Schema(
   {
-    expenseId: { type: String, required: true, unique: true },
+    expenseId: { type: String },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
-    amount: { type: Number, required: true },
+    expenseAmount: { type: Number, required: true },
+    purpose: { type: String },
     description: { type: String },
     dateOfExpense: { type: Date, default: Date.now },
     status: {
       type: String,
-      enum: ["Pending", "approved", "rejected"],
+      enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
     },
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },

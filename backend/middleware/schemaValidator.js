@@ -85,6 +85,56 @@ const passwordValidationSchema = zod.object({
 });
 
 const employeeValidationSchema = zod.object({
+  firstName: zod
+    .string()
+    .min(2, "First name must be at least 2 characters long")
+    .max(50, "First name must be at most 50 characters long")
+    .optional(),
+  lastName: zod
+    .string()
+    .min(2, "Last name must be at least 2 characters long")
+    .max(50, "Last name must be at most 50 characters long")
+    .optional(),
+  email: zod.string().email("Invalid email address").optional(),
+  password: zod
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .optional(),
+  dateOfBirth: zod.string().optional(), // Assuming date is in string format, otherwise use z.date()
+  gender: zod
+    .string()
+    .min(2, "Gender must be at least 2 characters long")
+    .max(10, "Gender must be at most 10 characters long")
+    .optional(),
+  streetAddress: zod
+    .string()
+    .min(2, "Street address must be at least 2 characters long")
+    .max(100, "Street address must be at most 100 characters long")
+    .optional(),
+  city: zod
+    .string()
+    .min(2, "City must be at least 2 characters long")
+    .max(50, "City must be at most 50 characters long")
+    .optional(),
+  state: zod
+    .string()
+    .min(2, "State must be at least 2 characters long")
+    .max(50, "State must be at most 50 characters long")
+    .optional(),
+  country: zod
+    .string()
+    .min(2, "Country must be at least 2 characters long")
+    .max(50, "Country must be at most 50 characters long")
+    .optional(),
+  zipCode: zod
+    .string()
+    .min(2, "Zip code must be at least 2 characters long")
+    .max(20, "Zip code must be at most 20 characters long")
+    .optional(),
+  phone: zod
+    .string()
+    .regex(/^\d{10,15}$/, "Please enter a valid phone number")
+    .optional(),
   employeeId: zod.string().optional(),
   firstName: zod.string().min(2, { message: "First name must be at least 2 characters long" }).max(50, { message: "First name must be at most 50 characters long" }).optional(),
   lastName: zod.string().min(2, { message: "Last name must be at least 2 characters long" }).max(50, { message: "Last name must be at most 50 characters long" }).optional(),
@@ -103,7 +153,7 @@ const employeeValidationSchema = zod.object({
   position: zod.string().min(2, { message: "Position must be at least 2 characters long" }).max(50, { message: "Position must be at most 50 characters long" }).optional(),
   dateOfJoining: zod.date().optional(),
   salary: zod.number().optional(),
-  manager: zod.string().optional(), // Assuming this is an ObjectId as a string
+  manager: zod.null().optional(), // Assuming this is an ObjectId as a string
   projects: zod.array(zod.string()).optional(),
   isManager: zod.boolean().optional(),
 
@@ -130,11 +180,12 @@ const candidateValidationSchema = zod.object({
 
 const expenseValidationSchema = zod.object({
   expenseId: zod.string().optional(),
-  employeeId: zod.string().optional(),
-  amount: zod.number().min(0).optional(),
+  userId: zod.string().optional(),
+  purpose:zod.string().optional(),
+  expenseAmount: zod.number().min(0).optional(),
   description: zod.string().optional(),
   dateOfExpense: zod.date().optional(),
-  status: zod.enum(["Pending", "approved", "rejected"]).optional(),
+  status: zod.enum(["Pending", "Approved", "Rejected"]).optional(),
   approvedBy: zod.string().optional(),
 });
 

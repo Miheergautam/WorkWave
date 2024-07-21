@@ -1,10 +1,14 @@
-import Img from "../../assets/images/logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InputBox } from "../InfoComponents/InputBox";
-import { ArrowLabel } from "../others/ArrowLabel";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import Img from "../../assets/images/logo.png";
+import { InputBox } from "../InfoComponents/InputBox";
+import { ArrowLabel } from "../others/ArrowLabel";
+import { PasswordInputBox } from "../InfoComponents/PasswordInputBox";
+
+import api from "../../utils/api";
 
 export function NewEmployee() {
   const navigate = useNavigate();
@@ -13,41 +17,47 @@ export function NewEmployee() {
     firstName: "",
     lastName: "",
     email: "",
-    phoneNumber: "",
-    address: "",
+    password: "",
+    gender: "",
+    phone: "",
+    dateOfBirth: "",
+    streetAddress: "",
     city: "",
     state: "",
     country: "",
     zipCode: "",
-    role: "",
     employeeId: "",
     department: "",
     position: "",
-    managerId: "",
     salary: "",
-    dateOfJoining: "",
-    projects: "",
-    isManager: "",
+    manager: null,
+    projects: [],
+    isManager: false,
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Simulate form submission or any async operation
-    toast.success("Employee created successfully!", {
-      position: "bottom-right", // Toast position
-      autoClose: 2000, // Close the toast after 3000ms (3 seconds)
-    });
-
-    setTimeout(() => {
-      navigate("/home/employee");
-    }, 2500);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEmployee({
-      ...employee,
-      [name]: value,
-    });
+    try {
+      const response = await api.post("/employee/create", {
+        ...employee,
+        salary: parseInt(employee.salary),
+        employeeId: `EMP-${employee.firstName[0]}${
+          employee.lastName[0]
+        }${Math.floor(Math.random() * 1000)}`,
+      });
+      if (response) {
+        setIsUpdated(true);
+        toast.success("Employee created successfully!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+        setTimeout(() => {
+          navigate("/home/employee");
+        }, 1500);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleImageUpload = () => {
@@ -75,40 +85,47 @@ export function NewEmployee() {
               label="First Name"
               placeholder="First Name"
               name="firstName"
-              value={employee.firstName}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, firstName: e.target.value })
+              }
             />
             <InputBox
               label="Last Name"
               placeholder="Last Name"
               name="lastName"
-              value={employee.lastName}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, lastName: e.target.value })
+              }
             />
           </div>
           <div className="col-span-2 col-start-2 flex justify-between">
             <InputBox
-              label="Email"
-              placeholder="Email"
-              name="email"
-              value={employee.email}
-              onChange={handleInputChange}
+              label="Gender"
+              placeholder="Gender"
+              name="gender"
+              onChange={(e) =>
+                setEmployee({ ...employee, gender: e.target.value })
+              }
             />
+
             <InputBox
-              label="Phone Number"
-              placeholder="Phone Number"
-              name="phoneNumber"
-              value={employee.phoneNumber}
-              onChange={handleInputChange}
+              type={"date"}
+              label="Date Of Birth"
+              placeholder="Date Of Birth"
+              name="dateOfBirth"
+              onChange={(e) =>
+                setEmployee({ ...employee, dateOfBirth: e.target.value })
+              }
             />
           </div>
           <div className="col-span-2 col-start-2">
             <InputBox
-              label="Address"
-              placeholder="Address"
-              name="address"
-              value={employee.address}
-              onChange={handleInputChange}
+              label="Street Address"
+              placeholder="Street Address"
+              name="streetAddress"
+              onChange={(e) =>
+                setEmployee({ ...employee, streetAddress: e.target.value })
+              }
             />
           </div>
           <div className="col-span-2 col-start-2 flex justify-between">
@@ -116,15 +133,17 @@ export function NewEmployee() {
               label="City"
               placeholder="City"
               name="city"
-              value={employee.city}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, city: e.target.value })
+              }
             />
             <InputBox
               label="State"
               placeholder="State"
               name="state"
-              value={employee.state}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, state: e.target.value })
+              }
             />
           </div>
           <div className="col-span-2 col-start-2 flex justify-between">
@@ -132,24 +151,56 @@ export function NewEmployee() {
               label="Country"
               placeholder="Country"
               name="country"
-              value={employee.country}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, country: e.target.value })
+              }
             />
             <InputBox
               label="Zip Code"
               placeholder="Zip Code"
               name="zipCode"
-              value={employee.zipCode}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, zipCode: e.target.value })
+              }
             />
           </div>
-          <div className="col-span-2 col-start-2">
+          {/* <div className="col-span-2 col-start-2">
             <InputBox
               label="Role"
               placeholder="Role"
               name="role"
-              value={employee.role}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, role: e.target.value })
+              }
+            />
+          </div> */}
+          <h1 className="col-span-4 mt-8 py-4 text-center font-semibold text-3xl">
+            Contact Information
+          </h1>
+          <div className="col-span-2 col-start-2 flex justify-between">
+            <InputBox
+              label="Email"
+              placeholder="Email"
+              name="email"
+              onChange={(e) =>
+                setEmployee({ ...employee, email: e.target.value })
+              }
+            />
+            <PasswordInputBox
+              label="Password"
+              placeholder="Password"
+              name="password"
+              onChange={(e) =>
+                setEmployee({ ...employee, password: e.target.value })
+              }
+            />
+            <InputBox
+              label="Phone Number"
+              placeholder="Phone Number"
+              name="phone"
+              onChange={(e) =>
+                setEmployee({ ...employee, phone: e.target.value })
+              }
             />
           </div>
 
@@ -181,15 +232,17 @@ export function NewEmployee() {
               label="Employee ID"
               placeholder="Employee ID"
               name="employeeId"
-              value={employee.employeeId}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, employeeId: e.target.value })
+              }
             />
             <InputBox
               label="Department"
               placeholder="Department"
               name="department"
-              value={employee.department}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, department: e.target.value })
+              }
             />
           </div>
           <div className="col-span-2 col-start-2 flex justify-between">
@@ -197,49 +250,46 @@ export function NewEmployee() {
               label="Position"
               placeholder="Position"
               name="position"
-              value={employee.position}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, position: e.target.value })
+              }
             />
-            <InputBox
-              label="Manager"
-              placeholder="Manager-Id"
-              name="managerId"
-              value={employee.managerId}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="col-span-2 col-start-2 flex justify-between">
             <InputBox
               label="Salary"
               placeholder="Salary"
               name="salary"
-              value={employee.salary}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, salary: e.target.value })
+              }
+            />
+          </div>
+          <div className="col-span-2 col-start-2 flex justify-between">
+            <InputBox
+              label="Manager"
+              placeholder="Manager-Id"
+              name="managerId"
+              onChange={(e) =>
+                setEmployee({ ...employee, manager: e.target.value })
+              }
             />
             <InputBox
-              label="Date Of Joining"
-              placeholder="Date Of Joining"
-              type="date"
-              name="dateOfJoining"
-              value={employee.dateOfJoining}
-              onChange={handleInputChange}
+              label="Projects"
+              placeholder="Projects"
+              name="projects"
+              onChange={(e) =>
+                setEmployee({ ...employee, projects: e.target.value })
+              }
             />
           </div>
 
           <div className="col-span-2 col-start-2 flex justify-between">
             <InputBox
-              label="Projects"
-              placeholder="Projects"
-              name="projects"
-              value={employee.projects}
-              onChange={handleInputChange}
-            />
-            <InputBox
               label="IsManager"
               placeholder="IsManager"
               name="isManager"
-              value={employee.isManager}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setEmployee({ ...employee, isManager: e.target.value })
+              }
             />
           </div>
 

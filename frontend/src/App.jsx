@@ -1,7 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Outlet, Route, Routes } from "react-router-dom";
 
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
@@ -36,34 +34,39 @@ import { CreateAttendance } from "./components/AttendanceComponents/CreateAttend
 import { EditAttendance } from "./components/AttendanceComponents/EditAttendance";
 import { ViewAttendance } from "./components/AttendanceComponents/ViewAttendance";
 
-import { AuthProvider } from "./contexts/AuthContext";
-import { ProtectedWrapper } from "./components/others/ProtectedWrapper";
+import { Layout } from "./pages/Layout";
+import { RequireAuth } from "./components/RequireAuth";
+import { DashboardProvider } from "./contexts/DashboardContext";
 
 function App() {
+  console.log("App.jsx");
+
   return (
-    <Router>
-      <AuthProvider>
-        <ToastContainer />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedWrapper>
-                <Home />
-              </ProtectedWrapper>
-            }
-          >
-            <Route path="dashboard" element={<Dashboard />} />
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/* Public Routes */}
+        <Route index element={<Landing />} />
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
+
+        {/* Protected Routes */}
+        <Route element={<RequireAuth />}>
+          <Route path="home" element={<Home />}>
+            <Route
+              path="dashboard"
+              element={
+                <DashboardProvider>
+                  <Dashboard />
+                </DashboardProvider>
+              }
+            />
             <Route path="profile" element={<Profile />}>
               <Route path="info" element={<ProfileInfo />} />
-              <Route path="change-password" element={<ChangePassword />} />
               <Route path="edit" element={<ProfileEdit />} />
+              <Route path="change-password" element={<ChangePassword />} />
             </Route>
             <Route path="candidates" element={<CandidateLayout />}>
-              <Route path="new" element={<NewCandidate />} />
+              <Route path="create" element={<NewCandidate />} />
               <Route path="edit" element={<EditCandidate />} />
               <Route path="manage" element={<ManageCandidate />} />
             </Route>
@@ -85,9 +88,9 @@ function App() {
               <Route path="view" element={<ViewAttendance />} />
             </Route>
           </Route>
-        </Routes>
-      </AuthProvider>
-    </Router>
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 

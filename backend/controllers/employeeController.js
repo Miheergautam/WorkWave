@@ -9,8 +9,9 @@ const createEmployee = async (req, res) => {
   // Validate input data against the schema
 
   try {
-    req.body.dateOfBirth = new Date(req.body.dateOfBirth);
-    req.body.dateOfJoining = new Date(req.body.dateOfJoining);
+    if (req.body.dateOfBirth) {
+      req.body.dateOfBirth = new Date(req.body.dateOfBirth);
+    }
 
     const { success, data, error } = employeeValidationSchema.safeParse(
       req.body
@@ -122,7 +123,6 @@ const createEmployee = async (req, res) => {
 
     return res.status(201).json({
       message: "Employee created successfully!",
-      UserId: newEmployee._id,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -167,7 +167,26 @@ const getEmployee = async (req, res) => {
 
     return res.status(200).json({
       message: "Employee fetched successfully",
-      data: employee,
+      data: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        gender: employee.gender,
+        phone: employee.phone,
+        dateOfBirth: employee.dateOfBirth,
+        streetAddress: employee.streetAddress,
+        city: employee.city,
+        state: employee.state,
+        country: employee.country,
+        zipCode: employee.zipCode,
+        employeeId: employee.employeeId,
+        department: employee.department,
+        position: employee.position,
+        salary: employee.salary,
+        manager: employee.manager,
+        projects: employee.projects,
+        isManager: employee.isManager,
+      },
     });
   } catch (error) {
     // Return error response if something goes wrong
@@ -184,17 +203,15 @@ const updateEmployee = async (req, res) => {
         .status(400)
         .json({ success: false, error: "Employee ID is required" });
     }
+    if (req.body.dateOfBirth) {
+      req.body.dateOfBirth = new Date(req.body.dateOfBirth);
+    }
 
     const { success, data, error } = employeeValidationSchema.safeParse(
       req.body
     );
     if (!success) {
       return res.status(400).json({ success: false, errors: error.errors });
-    }
-    if (data.email !== undefined) {
-      res
-        .status(400)
-        .json({ success: false, error: "Email cannot be updated" });
     }
 
     /* // Directory setup
@@ -279,14 +296,8 @@ const updateEmployee = async (req, res) => {
 
     const updatedEmployee = await employeeModel.findByIdAndUpdate(
       id,
-      {
-        ...data,
-        /* resume: resumeFullPdfUrl,
-        idProof: proofFullPdfUrl,
-        panCard: panFullPdfUrl,
-        marksheet: marksheetFullPdfUrl, */
-      },
-      { new: true, runValidators: true }
+      { $set: data },
+      { new: true }
     );
 
     if (updatedEmployee) {
@@ -324,7 +335,6 @@ const deleteEmployee = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-
 
 module.exports = {
   createEmployee,

@@ -1,52 +1,87 @@
 import { useNavigate } from "react-router-dom";
-import { PasswordInputBox } from "../InfoComponents/PasswordInputBox";
 import { useState } from "react";
-import { ArrowLabel } from "../others/ArrowLabel";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+//Components
+import { ArrowLabel } from "../others/ArrowLabel";
+import { PasswordInputBox } from "../InfoComponents/PasswordInputBox";
+
+//API utils
+import api from "../../utils/api";
 
 export function ChangePassword() {
   const navigate = useNavigate();
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userPassword, setUserPassword] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
-  const handleSubmitButton = () => {
+  const handleSubmitButton = async () => {
     // Placeholder for validation logic
-    if (
-      currentPassword === "" ||
-      newPassword === "" ||
-      confirmPassword === ""
-    ) {
-      toast.error("Please fill in all fields.",{
-        position: "top-right",
-        autoClose: 2000,
+    try {
+      if (
+        userPassword.currentPassword === "" ||
+        userPassword.newPassword === "" ||
+        userPassword.confirmPassword === ""
+      ) {
+        toast.error("Please fill all the Details!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        return;
+      }
+
+      if (userPassword.newPassword !== userPassword.confirmPassword) {
+        toast.error("New Password and Confirm Password does not match!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+
+        return;
+      }
+
+      const response = await api.put("/user/changePassword", {
+        currentPassword: userPassword.currentPassword,
+        newPassword: userPassword.newPassword,
+        confirmPassword: userPassword.confirmPassword,
       });
-      return;
+      if (response) {
+        ctoast.success("Password Changed successfully!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          navigate("/home/profile/info");
+        }, 1500);
+      } else {
+        console.log("Password Change Failed");
+      }
+    } catch (err) {
+      console.log("ChangePassword Saving Data Try block Failed:", err);
     }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("New Password and Confirm Password do not match.", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-      return;
-    }
-
-    // Placeholder for saving logic
-    toast.success("Password changed successfully!", {
-      position: "bottom-right",
-      autoClose: 2000,
-    });
-
-    setTimeout(() => {
-      navigate("/home/profile/info");
-    }, 2500);
   };
 
   return (
     <div className="flex flex-col gap-4">
+      <ToastContainer />
       <ArrowLabel label="Change Password" location={"/home/profile/info"} />
       <div className="col-span-4 bg-neutral-900 border border-neutral-700 rounded-lg">
         <div className="grid grid-cols-3">
@@ -54,20 +89,32 @@ export function ChangePassword() {
             <PasswordInputBox
               label="Current Password"
               placeholder="Enter current Password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              onChange={(e) =>
+                setUserPassword({
+                  ...userPassword,
+                  currentPassword: e.target.value,
+                })
+              }
             />
             <PasswordInputBox
               label="New Password"
               placeholder="Enter New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) =>
+                setUserPassword({
+                  ...userPassword,
+                  newPassword: e.target.value,
+                })
+              }
             />
             <PasswordInputBox
               label="Confirm Password"
               placeholder="Enter Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) =>
+                setUserPassword({
+                  ...userPassword,
+                  confirmPassword: e.target.value,
+                })
+              }
             />
             <div className="flex justify-center items-center my-8">
               <button

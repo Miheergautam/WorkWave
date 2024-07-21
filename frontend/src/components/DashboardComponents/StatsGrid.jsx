@@ -1,6 +1,19 @@
 import { Users, ClipboardList, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDashboard } from "../../contexts/DashboardContext";
 
 export function StatsGrid() {
+  const { fetchedData } = useDashboard();
+  const [noOfEmployees, setNoOfEmployees] = useState(0);
+  const [noOfTasks, setNoOfTasks] = useState(0);
+  const [noOfCandidates, setNoOfCandidates] = useState(0);
+
+  useEffect(() => {
+    if (fetchedData) {
+      setNoOfEmployees(fetchedData.filter((e) => e.role === "Employee").length);
+    }
+  }, [fetchedData]);
+
   return (
     <div className="flex gap-4 w-full">
       <BoxWrapper>
@@ -13,9 +26,20 @@ export function StatsGrid() {
           </span>
           <div className="flex items-center">
             <strong className="text-xl text-neutral-200 font-semibold">
-              57
+              {noOfEmployees}
             </strong>
-            <span className="text-sm text-green-500 pl-2">+14</span>
+            {fetchedData && (
+              <span className="text-sm text-green-500 pl-2">
+                +
+                {
+                  fetchedData.filter(
+                    (e) =>
+                      new Date(e.createdAt) >
+                      Date.now() - 7 * 24 * 60 * 60 * 1000
+                  ).length
+                }
+              </span>
+            )}
           </div>
         </div>
       </BoxWrapper>
@@ -54,7 +78,6 @@ export function StatsGrid() {
     </div>
   );
 }
-
 
 function BoxWrapper({ children }) {
   return (

@@ -7,6 +7,7 @@ import { Testimonials } from "../components/LandingComponents/Testimonials";
 import { Footer } from "../components/LandingComponents/Footer";
 
 export function Landing() {
+  console.log("Landing.jsx");
   return (
     <div>
       <Navbar />

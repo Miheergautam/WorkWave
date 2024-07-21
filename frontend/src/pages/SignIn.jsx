@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,9 +14,12 @@ import { BottomHeading } from "../components/InfoComponents/BottomHeading";
 import { PasswordInputBox } from "../components/InfoComponents/PasswordInputBox";
 
 export function SignIn() {
+  console.log("SignIn.jsx");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
+
+  const Navigate = useNavigate();
 
   const handleSignIn = async () => {
     try {
@@ -25,17 +29,9 @@ export function SignIn() {
       });
 
       if (result.token) {
-        login(result);
+        login(result.token);
+        Navigate("/home");
       } else {
-        toast.error("Failed to sign in. Please check your credentials.", {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-        });
         throw new Error("Signin failed");
       }
     } catch (error) {

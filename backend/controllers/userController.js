@@ -159,7 +159,7 @@ const changePassword = async (req, res) => {
 //get users
 const getUsers = async (req, res) => {
   try {
-    const users = await (await userModel.find()).at("-password");
+    const users = await (await userModel.find().select("-password"));
     res.status(200).json({
       message: "Users fetched successfully",
       data: users,

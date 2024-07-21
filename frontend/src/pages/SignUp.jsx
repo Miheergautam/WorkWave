@@ -14,6 +14,7 @@ import { BottomHeading } from "../components/InfoComponents/BottomHeading";
 import { PasswordInputBox } from "../components/InfoComponents/PasswordInputBox";
 
 export function SignUp() {
+  console.log("SignUp.jsx");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");

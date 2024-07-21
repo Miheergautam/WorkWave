@@ -4,10 +4,14 @@ const { expenseValidationSchema } = require("../middleware/schemaValidator");
 // Add an expense
 const addExpense = async (req, res) => {
   try {
-    req.body.dateOfExpense = new Date(req.body.dateOfExpense);
+    if (req.body.dateOfExpense) {
+      req.body.dateOfExpense = new Date(req.body.dateOfExpense);
+    }
+
     const { success, data, error } = expenseValidationSchema.safeParse(
       req.body
     );
+    
 
     if (!success) {
       return res
@@ -18,9 +22,7 @@ const addExpense = async (req, res) => {
     const newExpense = new expenseModel(data);
     await newExpense.save();
 
-    res
-      .status(201)
-      .json({ message: "Expense added successfully", expense: newExpense });
+    res.status(201).json({ message: "Expense added successfully" });
   } catch (err) {
     console.error("Error adding expense:", err);
     res.status(500).json({ message: "Internal Server Error" });

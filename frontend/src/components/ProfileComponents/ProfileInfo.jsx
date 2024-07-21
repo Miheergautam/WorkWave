@@ -1,19 +1,28 @@
+import { useEffect, useState } from "react";
 import Img from "../../assets/images/logo.png";
+import { useUser} from "../../contexts/UserContext";
 
-export const people = [
-  {
-    firstName: "John",
-    lastName: "Doe",
-    streetAddress: "123 Main St",
-    city: "Springfield",
-    state: "IL",
-    country: "USA",
-    phoneNumber: "555-1234",
-    email: "john.doe@example.com",
-  },
-];
 
 export function ProfileInfo() {
+  console.log("ProfileInfo.jsx");
+  const { fetchedData } = useUser();
+  const [userData, setUserData] = useState({
+    _id: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    country: "",
+  });
+
+  useEffect(() => {
+    setUserData(fetchedData);
+  },[fetchedData]);
+  
+
   return (
     <>
       <div className="col-span-4 border border-neutral-700 bg-neutral-900 rounded-lg p-4">
@@ -34,37 +43,37 @@ export function ProfileInfo() {
           <p className="col-span-1 flex flex-col gap-2">
             Firstname
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].firstName}
+              {userData.firstName}
             </span>
           </p>
           <p className="col-span-1 col-start-3 flex flex-col gap-2">
             Lastname{" "}
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].lastName}
+              {userData.lastName}
             </span>
           </p>
           <p className="col-span-2 flex flex-col gap-2">
             Street Address{" "}
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].streetAddress}
+              {userData.streetAddress}
             </span>
           </p>
           <p className="col-span-1 flex flex-col gap-2">
             City/Town{" "}
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].city}
+              {userData.city}
             </span>
           </p>
           <p className="col-span-1 flex flex-col gap-2">
             State{" "}
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].state}
+              {userData.state}
             </span>
           </p>
           <p className="col-span-1 col-start-3 flex flex-col gap-2">
             country{" "}
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].country}
+              {userData.country}
             </span>
           </p>
         </div>
@@ -74,13 +83,13 @@ export function ProfileInfo() {
             Phone Number
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
               {"+91 "}
-              {people[0].phoneNumber}
+              {userData.phone}
             </span>
           </p>
           <p className="col-span-1 col-start-3 flex flex-col gap-2">
             Email
             <span className="border border-neutral-600 bg-neutral-800 w-full rounded-lg py-2 px-2">
-              {people[0].email}
+              {userData.email}
             </span>
           </p>
         </div>

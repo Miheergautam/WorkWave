@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchBar } from "../../others/SearchBar";
 import { Edit, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -7,44 +7,71 @@ import { MdSearch } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import Modal from "react-modal";
 import "react-toastify/dist/ReactToastify.css";
+import { useExpense } from "../../../contexts/ExpenseContext";
+import api from "../../../utils/api"; // Ensure api is imported
 
-const expenses = [
-  {
-    employeeId: "E123",
-    expenseAmount: "$200.00",
-    purpose: "Travel",
-    dateOfExpense: "2024-06-15",
-    approvedBy: "John Doe",
-    status: "Approved",
-  },
-  {
-    employeeId: "E456",
-    expenseAmount: "$150.00",
-    purpose: "Office Supplies",
-    dateOfExpense: "2024-06-20",
-    approvedBy: "Jane Smith",
-    status: "Pending",
-  },
-  {
-    employeeId: "E789",
-    expenseAmount: "$300.00",
-    purpose: "Client Entertainment",
-    dateOfExpense: "2024-06-22",
-    approvedBy: "Michael Brown",
-    status: "Rejected",
-  },
-];
+// Ensure Modal styles are defined somewhere in your CSS
+Modal.setAppElement("#root");
 
 export function ManageExpense() {
   const navigate = useNavigate();
+  const { fetchedData, setSelectedExpense, setExpenses } = useExpense();
+  const [expenses, setExpensesState] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [filteredExpenses, setFilteredExpenses] = useState(expenses);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [isFetched, setIsFetched] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
+  const [employeeData, setEmployeeData] = useState([]);
+  const [adminData, setAdminData] = useState([]);
+
+  useEffect(() => {
+    if (fetchedData) {
+      setExpensesState(fetchedData);
+      setFilteredExpenses(fetchedData);
+    }
+
+    const getEmployee = async () => {
+      try {
+        const response = await api.get("/employee/list");
+        if (response && response.data) {
+          const employees = response.data.data;
+          setEmployeeData(
+            employees.map((employee) => ({
+              employeeId: employee.employeeId,
+              userId: employee._id,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      }
+    };
+
+    const getAdmins = async () => {
+      try {
+        const response = await api.get("/admin/getAll");
+        if (response && response.data) {
+          const admins = response.data.data;
+          setAdminData(
+            admins.map((admin) => ({
+              userId: admin._id,
+              name: `${admin.firstName} ${admin.lastName}`,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    getEmployee();
+    getAdmins();
+  }, [fetchedData]);
+
   const handleEdit = () => {
-    navigate("../expense/edit");
+    navigate("/home/finance/edit");
   };
 
   const handleSearchInput = (event) => {
@@ -52,11 +79,15 @@ export function ManageExpense() {
   };
 
   const handleSearchClick = () => {
-    setFilteredExpenses(
-      expenses.filter((expense) =>
-        expense.status.toLowerCase().includes(searchInput.toLowerCase())
-      )
-    );
+    if (searchInput.trim() === "") {
+      setFilteredExpenses(expenses);
+    } else {
+      setFilteredExpenses(
+        expenses.filter((expense) =>
+          expense.status.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    }
     setIsFetched(true);
   };
 
@@ -66,9 +97,8 @@ export function ManageExpense() {
   };
 
   const confirmDelete = () => {
-    const updatedExpenses = [...filteredExpenses];
-    const deletedExpense = updatedExpenses.splice(deleteIndex, 1)[0];
     setFilteredExpenses(updatedExpenses);
+    setExpenses(updatedExpenses); // Update the context with the new state
     setModalIsOpen(false);
     setDeleteIndex(null);
 
@@ -89,6 +119,16 @@ export function ManageExpense() {
       default:
         return "";
     }
+  };
+
+  const findEmployeeId = (userId) => {
+    const employee = employeeData.find((emp) => emp.userId === userId);
+    return employee ? employee.employeeId : "";
+  };
+
+  const findById = (userId) => {
+    const admin = adminData.find((adm) => adm.userId === userId);
+    return admin ? admin.name : "";
   };
 
   return (
@@ -149,18 +189,21 @@ export function ManageExpense() {
             <tbody>
               {filteredExpenses.map((expense, index) => (
                 <tr key={index} className="border border-neutral-600">
-                  <td className="py-2">{expense.employeeId}</td>
+                  <td className="py-2">{findEmployeeId(expense.userId)}</td>
                   <td>{expense.expenseAmount}</td>
                   <td>{expense.purpose}</td>
                   <td>{expense.dateOfExpense}</td>
-                  <td>{expense.approvedBy}</td>
+                  <td>{findById(expense.approvedBy)}</td>
                   <td className={getStatusColor(expense.status)}>
                     {expense.status}
                   </td>
                   <td>
                     <Edit
                       className="cursor-pointer inline-block mr-2 text-green-500"
-                      onClick={handleEdit}
+                      onClick={() => {
+                        setSelectedExpense(expense);
+                        handleEdit();
+                      }}
                     />
                     <Trash
                       className="cursor-pointer inline-block text-red-500"
