@@ -1,13 +1,16 @@
 import { useState } from "react";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/image.png";
 import { navItems } from "../../constants";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  const navigate = useNavigate();
 
   const renderNavItems = () => (
     <ul className="lg:flex justify-center">
@@ -40,9 +43,12 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b border-neutral-700">
       <div className="container px-3 mx-auto relative text-sm ">
         <div className="flex justify-between items-center">
-          <div className="flex items-center flex-shrink-0">
-            <img className="h-10 w-10 mr-2" src={logo} alt="CompanyLogo" />
-            <span className="text-xl tracking-tight">WorkWave</span>
+          <div
+            className="flex items-center flex-shrink-0 hover:cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <img className="h-14" src={logo} alt="CompanyLogo" />
+            <span className="text-2xl tracking-tight">WorkWave</span>
           </div>
           <div className="hidden lg:flex ml-14 space-x-12">
             {renderNavItems()}
